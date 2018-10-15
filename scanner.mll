@@ -3,9 +3,10 @@
 { open Parser }
 
 rule token = parse
-  [' ' '\t' '\r' '\n'] { token lexbuf }   (* Whitespace *)
+  [' ' '\t' '\r' ] { token lexbuf }   (* Whitespace *)
 | "/*"          { blockComment lexbuf  }     (* Comments *)
 | "//" 		      { lineComment  lexbuf  }
+| '\n'          { ENDLINE }  
 | '('           { LPAREN }
 | ')'           { RPAREN }
 | '{'           { LBRACE }
@@ -56,7 +57,7 @@ rule token = parse
 | ['h']['1'-'6'] as size    { HEADING(size) }
 | "font"                    { FONT }
 
-| 
+
 | [ 'left' 'right' 'center'] as position  { ALIGNMENT(position) }
 
 
