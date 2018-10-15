@@ -29,7 +29,12 @@
 %right NOT 
 %left DECREMENT INCREMENT
 
+%start program
 %%
+
+program: 
+	decls
+
 
 expr:
 	NUMBER						             { Number($1)}
@@ -38,8 +43,7 @@ expr:
 |	TRUE						             { Boolean(true)}
 |	FALSE						      		 { Boolean(false)}
 |	ID										 { Id($1) }
-|	VARIABLE								 { Var($1) }
-|	TAG  VARIABLE							 { Var($2) }
+|	VARIABLE								 { Var{1} }
 | 	expr PLUS   expr 						 { Binop($1, Add,   $3) }
 |	expr MINUS  expr 						 { Binop($1, Sub,   $3) }
 |	expr TIMES  expr 						 { Binop($1, Mult,  $3) }
@@ -55,33 +59,25 @@ expr:
 | 	expr OR     expr 			             { Binop($1, Or,    $3) }
 
 decls:
-	TAG DECLARE VARIABLE						{ [] }
-| 	TAG DECLARE VARIABLE LBRACKET expr RBRACkET { Call($1, $3) }
+	TAG DECLARE VARIABLE						{ Call($3) }
+| 	TAG DECLARE VARIABLE LBRACKET expr RBRACkET { Call($3, $5) }
 
 fdecl:
 	TAG DEFINE ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
-	fname = $1
-	formals = $4
-	locals = List.rev $7
-	body = List.rev
+	{{ fname = $3;
+	formals = $5;
+	locals = List.rev $8;
+	body = List.rev $9; }}
 
 vdecl_list:
 	/*nothing*/								{ [] }
-|   vedcl_list vdecl 						{ $2 :: $3}
+|   vedcl_list vdecl 						{ $1 :: $2}
 
 vdecl:
 	decls 									{ $1 }
 		
 	
 
-(*
-|	TAG LBRACE expr RBRACE 					 { $2 }
-|	TAG LPAREN expr RPAREN					 { $2 }
-
-
-expr_math:
-	| 	ID ASSIGN	expr			{ Assign($1, $3) 
-*)
 
 
 
