@@ -1,11 +1,12 @@
-(*Scanner for text++ *)
+(* Scanner for text++ *)
 
 { open Parser }
 
 rule token = parse
-  [' ' '\t' '\r' '\n'] { token lexbuf }   (* Whitespace *)
+  [' ' '\t' '\r' ] { token lexbuf }   (* Whitespace *)
 | "/*"          { blockComment lexbuf  }     (* Comments *)
 | "//" 		      { lineComment  lexbuf  }
+| '\n'          { ENDLINE }  
 | '('           { LPAREN }
 | ')'           { RPAREN }
 | '{'           { LBRACE }
@@ -50,11 +51,14 @@ rule token = parse
 
 (* Styling Tokens *)
 
-| ['h']['1'-'6'] as size    {HEADING(size)}
-| [ 'bold' 'italics' 'underline'] as style  { FONT(style)}
+|  "*"                      { BOLD }
+|  "**"                     { ITALICS }
+|  "__"                     { UNDERLINE }
+| ['h']['1'-'6'] as size    { HEADING(size) }
+| "font"                    { FONT }
 
 
-| [ 'left' 'right' 'center'] as position    { ALIGNMENT(position) }
+| [ 'left' 'right' 'center'] as position  { ALIGNMENT(position) }
 
 
 
