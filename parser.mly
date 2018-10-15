@@ -2,10 +2,12 @@
 
 
 %token SEMI COLON LPAREN RPAREN LBRACE RBRACE LBRACKET RBRACKET TAG
-%token HEADING FONT ALIGNMENT VARIABLE
+%token HEADING FONT ALIGNMENT VARIABLE ENDLINE
 %token PLUS MINUS TIMES DIVIDE MODULO ASSIGN NOT COMMA
 %token EQ NEQ LT NEQ GT GEQ AND OR 
 %token IF ELSE ELIF FOR WHILE CONT RETURN BOOL DEFINE DECLARE
+%token DEFINE
+%token DECLARE
 
 %token <int> INTEGER
 %token <float> FLOAT
@@ -27,10 +29,6 @@
 %left DECREMENT INCREMENT
 
 %%
-
-typ:
-	INTEGER {}
-
 
 expr:
 	NUMBER						             { Number($1)}
@@ -55,20 +53,33 @@ expr:
 | 	expr OR     expr 			             { Binop($1, Or,    $3) }
 
 decls:
-	TAG VARIABLE						{ [] }
-| 	TAG VARIABLE LBRACKET expr RBRACkET { Call($1, $3) }
-|	fdecl
+	TAG DECLARE VARIABLE						{ [] }
+| 	TAG DECLARE VARIABLE LBRACKET expr RBRACkET { Call($1, $3) }
 
 fdecl:
-	TAG
+	TAG DEFINE ID LPAREN formals_opt RPAREN LBRACE vdecl_list stmt_list RBRACE
+	fname = $1
+	formals = $4
+	locals = List.rev $7
+	body = List.rev
 
+vdecl_list:
+	/*nothing*/								{ [] }
+|   vedcl_list vdecl 						{ $2 :: $3}
 
+vdecl:
+	decls 									{ $1 }
+		
+	
+
+(*
 |	TAG LBRACE expr RBRACE 					 { $2 }
 |	TAG LPAREN expr RPAREN					 { $2 }
 
+
 expr_math:
 	| 	ID ASSIGN	expr			{ Assign($1, $3) 
-
+*)
 
 
 
