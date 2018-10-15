@@ -5,19 +5,22 @@
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf }   (* Whitespace *)
 | "/*"       { blockComment lexbuf  }     (* Comments *)
-| "//" 		 { lineComment  lexbuf  }
+| "//" 		   { lineComment  lexbuf  }
 | '('        { LPAREN }
 | ')'        { RPAREN }
 | '{'        { LBRACE }
 | '}'        { RBRACE }
+| '['        { LBRACKET }
+| ']'        { RBRACKET }
+| '@'        { TAG }
 | ';'        { SEMI }
-| ':'	     { COLON }
+| ':'	       { COLON }
 | ','        { COMMA }
 | '+'        { PLUS }
 | '-'        { MINUS }
 | '*'        { TIMES }
 | '/'        { DIVIDE }
-| '%'	     { MODULO }
+| '%'	       { MODULO }
 | '='        { ASSIGN }
 | "=="       { EQ }
 | "!="       { NEQ }
@@ -40,6 +43,8 @@ rule token = parse
 | "void"     { VOID }
 | "true"     { TRUE }
 | "false"    { FALSE }
+| "def"      { DEFINE }
+| "dec"       { DECLARE }
 | ['0'-'9']+ as lxm { INTEGER(int_of_string lxm) }
 | ['0'-'9']*'.'['0'-'9']+ | ['0'-'9']*'.'['0'-'9']+ as lxm { FLOAT(float_of_string lxm)}
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
