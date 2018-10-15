@@ -48,9 +48,23 @@ rule token = parse
 | "dec"         { DECLARE }
 | eof           { EOF }
 
-| [ 'left' 'right' 'center'] as position { ALIGN(position)}
+(* Styling Tokens *)
+
+| ['h']['1'-'6'] as size    {HEADING(size)}
+| [ 'bold' 'italics' 'underline'] as style  { FONT(style)}
+
+
+| [ 'left' 'right' 'center'] as position    { ALIGNMENT(position) }
+
+
+
+
 
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
+
+| [ '' ]
+
+
 | ['a'-'z']+ as id { VARIABLE(id) }
 
 | ['0'-'9']+ as lxm { INTEGER(int_of_string lxm) }
