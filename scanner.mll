@@ -4,7 +4,8 @@
 
 rule token = parse
   [' ' '\t' '\r' '\n'] { token lexbuf }   (* Whitespace *)
-| "/*"       { comment lexbuf }           (* Comments *)
+| "/*"       { blockComment lexbuf  }     (* Comments *)
+| "//" 		 { lineComment  lexbuf  }
 | '('        { LPAREN }
 | ')'        { RPAREN }
 | '{'        { LBRACE }
@@ -35,16 +36,21 @@ rule token = parse
 | "continue" { CONT }
 | "break"    { BREAK }
 | "return"   { RETURN }
-| "int"      { INT }
 | "bool"     { BOOL }
 | "void"     { VOID }
 | "true"     { TRUE }
 | "false"    { FALSE }
-| ['0'-'9']+ as lxm { LITERAL(int_of_string lxm) }
+| ['0'-'9']+ as lxm { INTEGER(int_of_string lxm) }
+| ['0'-'9']*'.'['0'-'9']+ | ['0'-'9']*'.'['0'-'9']+ as lxm { FLOAT(float_of_string lxm)}
 | ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
+| '"'([^ '"']* as str)'"' as lxm { STRING(str)} /*check this*/
 | eof { EOF }
 | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
 
-and comment = parse
+and blockComment = parse
   "*/" { token lexbuf }
-| _    { comment lexbuf }
+| _    { blockComment lexbuf }
+
+and lineComment = parse
+  ['\n']  { token lexbuf }
+| _       { lineComment lexbuf }
