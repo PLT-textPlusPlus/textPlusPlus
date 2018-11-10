@@ -1,62 +1,99 @@
 { open Parser }
 
-rule token = parse
-  [' ' '\t' '\r' ] { token lexbuf }   (* Whitespace *)
-| "/*"          { blockComment lexbuf  }     (* Comments *)
-| "//" 		      { lineComment  lexbuf  }
-| '\n'          { ENDLINE }  
-| '('           { LPAREN }
-| ')'           { RPAREN }
-| '{'           { LBRACE }
-| '}'           { RBRACE }
-| '['           { LBRACKET }
-| ']'           { RBRACKET }
-| '@'           { TAG }
-| ';'           { SEMI }
-| ':'	        { COLON }
-| ','           { COMMA }
-| '+'           { PLUS }
-| '-'           { MINUS }
-| "mm"          { DECREMENT }
-| "pp"          { INCREMENT }
-| '*'           { TIMES }
-| '/'           { DIVIDE }
-| '%'	        { MODULO }
-| '='           { ASSIGN }
-| "=="          { EQ }
-| "!="          { NEQ }
-| '<'           { LT }
-| "<="          { LEQ }
-| ">"           { GT }
-| ">="          { GEQ }
-| "&&"          { AND }
-| "||"          { OR }
-| "!"           { NOT }
-| "if"          { IF }
-| "else"        { ELSE }
-| "elif"        { ELIF }
-| "for"         { FOR }
-| "while"  	    { WHILE }
-| "continue"    { CONT }
-| "break"       { BREAK }
-| "return"      { RETURN }
-| "bool"        { BOOL }
-| "true"        { TRUE }
-| "false"       { FALSE }
-| "def"         { DEFINE }
-| "dec"         { DECLARE }
-| eof           { EOF }
+let whitespace = [' ' '\t' '\r' '\n']
+let digits = ['0'-'9']
+let decimal = ['.']
+let esc = '\\' ['\\' ''' '"' 'n' 'r' 't']
+let alphabet = ['a'-'z' 'A'-'Z' ]
+let ascii = ([' '-'!' '#'-'[' ']'-'~'])
 
-| ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']* as lxm { ID(lxm) }
-| ['a'-'z']+ as id { VARIABLE(id) }
-| ['0'-'9']+ as lxm { NUMBER(int_of_string lxm) }
-| ['0'-'9']*'.'['0'-'9']+ | ['0'-'9']*'.'['0'-'9']+ as lxm { FLOAT(float_of_string lxm)}
-| '"'([^ '"']* as str)'"' as lxm { STRING(str)}
+
+(* Data Types *)
+let id = ['a'-'z' 'A'-'Z']['a'-'z' 'A'-'Z' '0'-'9' '_']*
+let integer = digits+
+let float = digits* decimal digits+ | digits+ decimal digits*
+
+
+rule token = parse
+    whitespace  { token lexbuf }           (* Whitespace *)
+  | "/*"          { blockComment lexbuf  } (* Comments *)
+  | "//" 		      { lineComment  lexbuf  }
+  | '('           { LPAREN }
+  | ')'           { RPAREN }
+  | '{'           { LBRACE }
+  | '}'           { RBRACE }
+  | '['           { LBRACKET }
+  | ']'           { RBRACKET }
+  | '@'           { TAG }
+  | ';'           { SEMI }
+  | ':'	          { COLON }
+  | ','           { COMMA }
+
+  (* Arithmetic Operators *)
+
+  | '+'           { PLUS }
+  | '-'           { MINUS }
+  | "++"          { DECREMENT }
+  | "--"          { INCREMENT }
+  | '*'           { TIMES }
+  | '/'           { DIVIDE }
+  | '%'	          { MODULO }
+  | '='           { ASSIGN }
+  | "=="          { EQ }
+  | "!="          { NEQ }
+
+  (* Relational Operators *)
+  | '<'           { LT }
+  | "<="          { LEQ }
+  | ">"           { GT }
+  | ">="          { GEQ }
+
+  (* Logical Operators *)
+  | "&&"          { AND }
+  | "||"          { OR }
+  | "!"           { NOT }
+
+  (* Control Flow *)
+  | "if"          { IF }
+  | "else"        { ELSE }
+  | "elif"        { ELIF }
+  | "for"         { FOR }
+  | "while"  	    { WHILE }
+  | "continue"    { CONT }
+  | "break"       { BREAK }
+  | "return"      { RETURN }
+
+  (* Keywords *)
+  | "int"       { INT }
+  | "float"     { FLOAT }
+  | "string"    { STRING }
+  | "bool"      { BOOL }
+  | "null"      { NULL }
+  | "true"      { TRUE }
+  | "false"     { FALSE }
+  | "def"         { DEFINE }
+  | "dec"         { DECLARE }
+
+  (* Literals and Identifiers *)
+  | integer as lxm      { NUMBER(int_of_string lxm) }
+  | float as lxm        { FLOAT(float_of_string lxm)}
+  | '"'([^ '"']* as str)'"' as lxm { STRING(str)}
+  | id as lxm           { ID(lxm) }
+
+  
+  (* End of File *)
+  | eof { EOF }
+
+  (* Error Handling *)
+  | _ as char { raise (Failure("illegal character " ^ Char.escaped char)) }
+
 
 and blockComment = parse
-  "*/" { token lexbuf }
-| _    { blockComment lexbuf }
+    "*/" { token lexbuf }
+  | _    { blockComment lexbuf }
 
 and lineComment = parse
-  ['\n']  { token lexbuf }
-| _       { lineComment lexbuf }
+    ['\n']  { token lexbuf }
+  | _       { lineComment lexbuf }
+
+
