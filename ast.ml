@@ -21,7 +21,7 @@ type expr =
   | Unop of uop * expr
   | Postop of expr * pop
   | Assign of expr * expr 
-  | AssignDecl of typ * string * expr (*do we need this?*)
+  (*| AssignDecl of typ * string * expr do we need this?*)
   | Call of string * expr list
   | Noexpr 
 
