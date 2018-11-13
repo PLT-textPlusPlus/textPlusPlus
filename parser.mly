@@ -87,7 +87,7 @@ stmt:
   | TAG IF LPAREN expr RPAREN stmt TAG ELSE stmt    { If($4, $6, $9) }
   | TAG FOR LPAREN optional_expr SEMI expr SEMI optional_expr RPAREN stmt
      { For($4, $6, $8, $10) }
-  | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
+  | TAG WHILE LPAREN expr RPAREN stmt { While($4, $6) }
 
   optional_expr:
   /* nothing */ { Noexpr }
