@@ -112,8 +112,7 @@ optional_expr:
 
 expr:
 
-    STRLITERAL                               { Literal($1) }
-  | NUMBER                         { Number($1)}
+    NUMBER                         { Number($1)}
   | FLOAT                          { Float($1) }
   | STRING                         { String($1)}
   | TRUE                         { Boolean(true)}
