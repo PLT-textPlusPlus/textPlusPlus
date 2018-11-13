@@ -34,12 +34,13 @@ type expr =
   | While of expr * stmt
 
   type func_decl = {
-    typ : typ;
-    fname : string;
-    formals : bind list;
-    locals : bind list;
-    body : stmt list;
+    function_typ : typ;
+    function_name : string;
+    parameters : bind list;
+    local_variables : bind list;
+    code_block : stmt list;
   }
+
 
   type program = bind list * func_decl list
 
@@ -58,23 +59,30 @@ let string_of_op = function
   | Geq -> ">="
   | And -> "&&"
   | Or -> "||"
+  | Mod -> "%"
 
 let string_of_uop = function
-    Neg -> "-"
-  | Not -> "!"
+    Not -> "!"
+
+let string_of_pop = function
+  Decr -> "--"
+| Incr -> "++"
 
 let rec string_of_expr = function
-    Literal(l) -> string_of_int l
-  | Fliteral(l) -> l
-  | BoolLit(true) -> "true"
-  | BoolLit(false) -> "false"
-  | Id(s) -> s
+    Number(n) -> string_of_int n
+  | Float(f) -> string_of_float f
+  | String(s) -> string_of_int s
+  | Boolean(true) -> "true"
+  | Boolean(false) -> "false"
+  | Id(i) -> i
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
-  | Assign(v, e) -> v ^ " = " ^ string_of_expr e
+  | Postop(e, o) -> string_of_expr e ^ string_of_pop o
+  | Assign(v, e) -> 
+      "@ " ^ v ^ "[" ^ string_of_expr e ^ "]"    (* ASK ABOUT THIS SHIT *)
   | Call(f, el) ->
-      f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+    "@  " ^ f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
   | Noexpr -> ""
 
 let rec string_of_stmt = function
@@ -82,38 +90,32 @@ let rec string_of_stmt = function
       "{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
   | Expr(expr) -> string_of_expr expr ^ ";\n";
   | Return(expr) -> "return " ^ string_of_expr expr ^ ";\n";
-  | If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ string_of_stmt s
-  | If(e, s1, s2) ->  "if (" ^ string_of_expr e ^ ")\n" ^
-      string_of_stmt s1 ^ "else\n" ^ string_of_stmt s2
+  | If(e, s, Block([])) -> "@ if (" ^ string_of_expr e ^ ")\n" ^ string_of_stmt s
+  | If(e, s1, s2) ->  "@ if (" ^ string_of_expr e ^ ")\n" ^
+      string_of_stmt s1 ^ "@ else\n" ^ string_of_stmt s2
   | For(e1, e2, e3, s) ->
-      "for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
+      "@ for (" ^ string_of_expr e1  ^ " ; " ^ string_of_expr e2 ^ " ; " ^
       string_of_expr e3  ^ ") " ^ string_of_stmt s
-  | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
+  | While(e, s) -> "@ while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
 
 let string_of_typ = function
     Int -> "int"
-  | Bool -> "bool"
   | Float -> "float"
-  | Void -> "void"
+  | String -> "string"
+  | Bool -> "bool"
 
-let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
+let string_of_vdecl (t, id, e) = 
+  "@ dec" ^ string_of_typ t ^ " " ^ id ^ "[ " ^ string_of_expr e ^ " ]"
+
 
 let string_of_fdecl fdecl =
-  string_of_typ fdecl.typ ^ " " ^
-  fdecl.fname ^ "(" ^ String.concat ", " (List.map snd fdecl.formals) ^
+  "@ def" string_of_typ fdecl.function_typ ^ " " ^
+  fdecl.function_name ^ "(" ^ String.concat ", " (List.map snd fdecl.parameters) ^
   ")\n{\n" ^
-  String.concat "" (List.map string_of_vdecl fdecl.locals) ^
-  String.concat "" (List.map string_of_stmt fdecl.body) ^
+  String.concat "" (List.map string_of_vdecl fdecl.local_variables) ^
+  String.concat "" (List.map string_of_stmt fdecl.code_block) ^
   "}\n"
 
 let string_of_program (vars, funcs) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs)
-
-
-
-
-
-
-
-
