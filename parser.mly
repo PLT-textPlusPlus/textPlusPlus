@@ -73,7 +73,7 @@ var_declaration_list:
   | var_declaration_list var_declaration { $2 :: $1 }
 
 var_declaration:
-   TAG DECLARE typ ID LBRACKET expr RBRACKET { [($3, $4, $6)] }
+   TAG DECLARE typ ID LBRACKET expr RBRACKET { ($3, $4, $6) }
 
 stmt_list:
    stmt_list stmt { $2 :: $1 }
