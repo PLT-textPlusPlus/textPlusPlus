@@ -82,8 +82,7 @@ stmt:
     expr SEMI { Expr $1 }
   | RETURN SEMI { Return Noexpr }
   | RETURN expr SEMI { Return $2 }
-  | TAG LPAREN stmt_list RPAREN { Block(List.rev $3) }
-  | TAG LBRACE stmt_list RBRACE { Block(List.rev $3) }
+  | LPAREN stmt_list RPAREN { Block(List.rev $2) }
   | LBRACE stmt_list RBRACE { Block(List.rev $2) }
   | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
   | FOR LPAREN optional_expr SEMI expr SEMI optional_expr RPAREN stmt
