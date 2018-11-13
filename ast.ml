@@ -12,10 +12,10 @@ type typ = Int | Bool | Float | String
 type bind = typ * string
 
 type expr =
-	IntLit of int
-  | FloatLit of float
-  | StrLit of string
-  | BoolLit of bool
+    Number of int
+  | Float of float
+  | String of string
+  | Boolean of bool
   | Id of string
   | Binop of expr * op * expr
   | Unop of uop * expr
