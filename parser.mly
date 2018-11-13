@@ -115,8 +115,8 @@ stmt:
   | expr AND    expr 			             { Binop($1, And,   $3) }
   | expr OR     expr 			             { Binop($1, Or,    $3) }
   | NOT expr                                 { Unop(Not, $2) }
-  | expr DECREMENT                           { Binop($1, Decrement) }
-  | expr INCREMENT                           { Binop($1, Increment) }
+  | expr DECREMENT                           { Postop($1, Decrement) }
+  | expr INCREMENT                           { Postop($1, Increment) }
   | LPAREN expr RPAREN                       { $2 }
   | TAG ID LBRACKET expr RBRACKET      { Assign($2, $4) }
   | TAG ID LPAREN option_args RPAREN         { Call($2, $4) }
