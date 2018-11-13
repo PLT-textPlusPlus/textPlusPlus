@@ -1,8 +1,10 @@
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or | Mod
+          And | Or | Mod 
 
-type uop = Not | Decr | Incr
+type uop = Not 
+
+type pop = Decr | Incr
 
 type typ = Int | Bool | Float | String
 
@@ -17,6 +19,7 @@ type expr =
   | Id of string
   | Binop of expr * op * expr
   | Unop of uop * expr
+  | Postop of expr * pop
   | Assign of expr * expr 
   | AssignDecl of typ * string * expr (*do we need this?*)
   | Call of string * expr list
