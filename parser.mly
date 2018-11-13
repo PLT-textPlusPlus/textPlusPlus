@@ -100,7 +100,7 @@ stmt:
   |	STRING   					             { String($1)}
   |	TRUE						             { Boolean(true)}
   |	FALSE						      		 { Boolean(false)}
-  |	TAG  ID							         { Var($2) }
+  |	TAG  ID							         { Id($2) }
   | expr PLUS   expr 						 { Binop($1, Add,   $3) }
   |	expr MINUS  expr 						 { Binop($1, Sub,   $3) }
   |	expr TIMES  expr 						 { Binop($1, Mult,  $3) }
@@ -128,26 +128,3 @@ option_args:
 args_list:
     expr                    { [$1] }
   | args_list COMMA expr    { $3 :: $1 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
