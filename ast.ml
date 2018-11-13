@@ -1,26 +1,28 @@
-(* Abstract Syntax Tree and functions for printing it *)
 
 type op = Add | Sub | Mult | Div | Equal | Neq | Less | Leq | Greater | Geq |
-          And | Or
+          And | Or | Mod
 
-type uop = Neg | Not
+type uop = Not | Decr | Incr
 
-type typ = Int | Bool | Float | Void
+type typ = Int | Bool | Float | String
 
+(* Come back to line below *)
 type bind = typ * string
 
 type expr =
-    Literal of int
-  | Fliteral of string
-  | BoolLit of bool
-  | Id of string
+	IntLit of int
+  | FloatLit of float
+  | StrLit of string
+  | BoolLit of bool
+  | Id of string
   | Binop of expr * op * expr
   | Unop of uop * expr
-  | Assign of string * expr
+  | Assign of expr * expr 
+  | AssignDecl of typ * string * expr (*do we need this?*)
   | Call of string * expr list
-  | Noexpr
+  | Noexpr 
 
-type stmt =
+  type stmt =
     Block of stmt list
   | Expr of expr
   | Return of expr
@@ -28,7 +30,7 @@ type stmt =
   | For of expr * expr * expr * stmt
   | While of expr * stmt
 
-type func_decl = {
+  type func_decl = {
     typ : typ;
     fname : string;
     formals : bind list;
@@ -36,9 +38,9 @@ type func_decl = {
     body : stmt list;
   }
 
-type program = bind list * func_decl list
+  type program = bind list * func_decl list
 
-(* Pretty-printing functions *)
+  (* Pretty-printing functions *)
 
 let string_of_op = function
     Add -> "+"
@@ -104,3 +106,11 @@ let string_of_fdecl fdecl =
 let string_of_program (vars, funcs) =
   String.concat "" (List.map string_of_vdecl vars) ^ "\n" ^
   String.concat "\n" (List.map string_of_fdecl funcs)
+
+
+
+
+
+
+
+
