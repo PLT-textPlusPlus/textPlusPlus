@@ -46,11 +46,12 @@ declarations:
  | declarations func_declaration { fst $1, ($2 :: snd $1) }
 
  func_declaration:
-   TAG DEFINE ID LPAREN optional_formal_parameters RPAREN LBRACE var_declaration_list stmt_list RBRACE
-     { {  function_name = $3;
-	      parameters= $5;
-	      local_variables = List.rev $8;
-	      code_block = List.rev $9; 
+   TAG DEFINE typ ID LPAREN optional_formal_parameters RPAREN LBRACE var_declaration_list stmt_list RBRACE
+     { {  function_typ = $3;
+              function_name = $4;
+	      parameters= $6;
+	      local_variables = List.rev $9;
+	      code_block = List.rev $10; 
      } }
 
 typ:
@@ -72,7 +73,7 @@ var_declaration_list:
   | var_declaration_list var_declaration { $2 :: $1 }
 
 var_declaration:
-   TAG DECLARE ID LBRACKET RBRACKET { ($3) }
+   TAG DECLARE typ ID LBRACKET expr RBRACKET { [($3, $4, $6)] }
 
 stmt_list:
    stmt_list stmt { $2 :: $1 }
