@@ -84,7 +84,7 @@ stmt:
   | RETURN expr SEMI { Return $2 }
   | LPAREN stmt_list RPAREN { Block(List.rev $2) }
   | LBRACE stmt_list RBRACE { Block(List.rev $2) }
-  | TAG IF LPAREN expr RPAREN stmt TAG ELSE stmt    { If($4, $6, $8) }
+  | TAG IF LPAREN expr RPAREN stmt TAG ELSE stmt    { If($4, $6, $9) }
   | TAG FOR LPAREN optional_expr SEMI expr SEMI optional_expr RPAREN stmt
      { For($4, $6, $8, $10) }
   | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
