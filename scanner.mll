@@ -68,6 +68,7 @@ rule token = parse
   | "string"    { STRING }
   | "bool"      { BOOL }
   | "null"      { NULL }
+  | "void"      { VOID }
   | "true"      { TRUE }
   | "false"     { FALSE }
   | "def"         { DEFINE }
