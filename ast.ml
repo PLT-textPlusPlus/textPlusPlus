@@ -6,7 +6,7 @@ type uop = Not
 
 type pop = Decr | Incr
 
-type typ = Int | Bool | Float | String
+type typ = Int | Bool | Float | String | Void
 
 (* Come back to line below *)
 type bind = typ * string
@@ -103,6 +103,7 @@ let string_of_typ = function
   | Float -> "float"
   | String -> "string"
   | Bool -> "bool"
+  | Void -> "void"
 
 let string_of_vdecl (t, id, e) = 
   "@ dec" ^ string_of_typ t ^ " " ^ id ^ "[ " ^ string_of_expr e ^ " ]"
