@@ -163,11 +163,11 @@ let built_in_functions =
         | _ -> raise (Failure("illegal postunary operator " ^
               string_of_pop op ^ " on " ^ string_of_expr p)))
 
-      | Call(fname, args) as call -> 
-          let fd = find_func fname in
-          let param_length = List.length fd.formals in
-          if List.length args != param_length then
-            raise (Failure ("expecting " ^ string_of_int param_length ^ 
+      | Call(function_name, parameters) as call -> 
+          let fd = find_func function_name in
+          let param_length = List.length fd.parameters in
+          if List.length parameters != param_length then
+            raise (Failure ("Incorrect number of parameters. Expected " ^ string_of_int param_length ^ 
                             " arguments in " ^ string_of_expr call))
           else let check_call (ft, _) e = 
             let (et, e') = expr e in 
@@ -175,6 +175,12 @@ let built_in_functions =
               " expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e
             in (check_assign ft et err, e')
           in 
-          let args' = List.map2 check_call fd.formals args
-          in (fd.typ, SCall(fname, args'))
+          let parameters' = List.map2 check_call fd.parameters parameters
+          in (fd.function_typ, SCall(function_name, parameters'))
+    in
+
+    let check_bool_expr e = 
+      let (t', e') = expr e
+      and err = "expected Boolean expression in " ^ string_of_expr e
+      in if t' != Bool then raise (Failure err) else (t', e') 
     in
