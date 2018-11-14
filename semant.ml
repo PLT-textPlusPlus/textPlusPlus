@@ -110,17 +110,41 @@ let built_in_functions =
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
-        Literal  l -> (Int, SLiteral l)
-      | Fliteral l -> (Float, SFliteral l)
-      | BoolLit l  -> (Bool, SBoolLit l)
+
+        Number  l -> (Int, SNumber l)
+      | Float l -> (Float, SFloat l)
+      | Boolean l  -> (Bool, SBoolean l)
+      | String l -> (String, SString)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
-      | Assign(var, e) as ex -> 
-          let lt = type_of_identifier var
-          and (rt, e') = expr e in
+      | Noexpr -> Void
+      | Assign(id, expression) as ex -> 
+          let lt = type_of_identifier id
+          and (rt, expression') = expr expression in
           let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^ 
             string_of_typ rt ^ " in " ^ string_of_expr ex
-          in (check_assign lt rt err, SAssign(var, (rt, e')))
+          in (check_assign lt rt err, SAssign(id, (rt, expression')))
+
+      | Binop(expression1, op, expression2) as e -> 
+          let (t1, expression1') = expr expression1
+           and (t2, expression2') = expr expression2 in
+          (* Ask Edwards about how to make it such that you can add
+          strings and numbers together// also floats and integers *)
+          let same = t1 = t2 in
+          (* Determine expression type based on operator and operand types *)
+          let ty = match op with
+            Add | Sub | Mult | Div | Mod  when same && t1 = Int   -> Int
+          | Add | Sub | Mult | Div | Mod when same && t1 = Float -> Float
+          | Equal | Neq   when same  -> Bool
+          | Less | Leq | Greater | Geq
+                     when same && (t1 = Int || t1 = Float) -> Bool
+          | And | Or when same && t1 = Bool -> Bool
+          | _ -> raise (
+	      Failure ("illegal binary operator " ^
+                       string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
+                       string_of_typ t2 ^ " in " ^ string_of_expr e))
+          in (ty, SBinop((t1, e1'), op, (t2, e2')))
+
       | Unop(op, e) as ex -> 
           let (t, e') = expr e in
           let ty = match op with
@@ -130,24 +154,15 @@ let built_in_functions =
                                  string_of_uop op ^ string_of_typ t ^
                                  " in " ^ string_of_expr ex))
           in (ty, SUnop(op, (t, e')))
-      | Binop(e1, op, e2) as e -> 
-          let (t1, e1') = expr e1 
-          and (t2, e2') = expr e2 in
-          (* All binary operators require operands of the same type *)
-          let same = t1 = t2 in
-          (* Determine expression type based on operator and operand types *)
+
+      | Postop (e, op) as p ->
+        let (t, e')  = expr e in
           let ty = match op with
-            Add | Sub | Mult | Div when same && t1 = Int   -> Int
-          | Add | Sub | Mult | Div when same && t1 = Float -> Float
-          | Equal | Neq            when same               -> Bool
-          | Less | Leq | Greater | Geq
-                     when same && (t1 = Int || t1 = Float) -> Bool
-          | And | Or when same && t1 = Bool -> Bool
-          | _ -> raise (
-	      Failure ("illegal binary operator " ^
-                       string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
-                       string_of_typ t2 ^ " in " ^ string_of_expr e))
-          in (ty, SBinop((t1, e1'), op, (t2, e2')))
+          Incr when t = Int -> Int
+        | Decr when t = Int -> Int
+        | _ -> raise (Failure("illegal postunary operator " ^
+              string_of_pop op ^ " on " ^ string_of_expr p)))
+
       | Call(fname, args) as call -> 
           let fd = find_func fname in
           let param_length = List.length fd.formals in
