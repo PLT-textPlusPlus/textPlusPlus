@@ -169,7 +169,7 @@ let printbig_func : L.llvalue =
           then A.Float(1.0)
           else A.Int(1) in
 
-          expr builder (A.Assign(val, A.Binop(e, op_typ, num_typ)))  
+          expr builder (A.Assign(llval, A.Binop(e, op_typ, num_typ)))  
 
       | SAssign (v, e) -> 
         let e' = expr builder e and llval = lookup v in
