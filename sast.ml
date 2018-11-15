@@ -2,22 +2,21 @@
 
 open Ast
 
-(* Come back to line below *)
-(* Come back to line below *)
+(* spcaving issues with float*)
 type sexpr = typ * xpr
 and xpr =
     SNumber of int
-  | SFloat of float
-  | SString of string
-  | SBoolean of bool
-  | SId of string
-  | SBinop of sexpr * op * sexpr
-  | SUnop of uop * sexpr
-  | SPostop of sexpr * pop
-  | SAssign of sexpr * sexpr 
-  (*| AssignDecl of typ * string * expr do we need this?*)
-  | SCall of string * sexpr list
-  | SNoexpr 
+| SFloat of float
+| SString of string
+| SBoolean of bool
+| SId of string
+| SBinop of sexpr * op * sexpr
+| SUnop of uop * sexpr
+| SPostop of sexpr * pop
+| SAssign of sstring * sexpr 
+(*| AssignDecl of typ * string * expr do we need this?*)
+| SCall of string * sexpr list
+| SNoexpr 
 
   type sstmt =
     SBlock of sstmt list
