@@ -154,10 +154,10 @@ let printbig_func : L.llvalue =
           let e' = expr builder e in
 	  (match op with
       	| A.Not   -> L.build_not) e' "tmp" builder
-	  (*
+	  
       | SPostop (e, op) ->
           let e' = expr builder e in
-          let val = (match e with
+          let llval = (match e with
             SId(s) -> s (*debugging error with spacing*)
           | _ -> raise (Failure("Value cannot be incremented or decremented"))
           )
@@ -169,11 +169,11 @@ let printbig_func : L.llvalue =
           then A.Float(1.0)
           else A.Int(1) in
 
-          expr builder (A.Assign(val, A.Binop(e, op_typ, num_typ)))  *)
+          expr builder (A.Assign(val, A.Binop(e, op_typ, num_typ)))  
 
       | SAssign (v, e) -> 
-        let e' = expr builder e and val = lookup v in
-         ignore (L.build_store e' val builder); e'
+        let e' = expr builder e and llval = lookup v in
+         ignore (L.build_store e' llval builder); e'
 
 	   | SCall ("printi", [e]) 
 
