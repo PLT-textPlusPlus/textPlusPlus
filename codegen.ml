@@ -46,13 +46,13 @@ let global_vars : L.llvalue StringMap.t =
 
 let printf_t : L.lltype = 
       L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
-  let printf_func : L.llvalue = 
-      L.declare_function "printf" printf_t the_module in
+let printf_func : L.llvalue = 
+  L.declare_function "printf" printf_t the_module in
 
-  let printbig_t : L.lltype =
-      L.function_type i32_t [| i32_t |] in
-  let printbig_func : L.llvalue =
-      L.declare_function "printbig" printbig_t the_module in
+let printbig_t : L.lltype =
+  L.function_type i32_t [| i32_t |] in
+let printbig_func : L.llvalue =
+  L.declare_function "printbig" printbig_t the_module in
 
 (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -61,7 +61,7 @@ let printf_t : L.lltype =
       let name = fdecl.sfunction_name
       and formal_types = 
 	Array.of_list (List.map (fun (t,_) -> ltype_of_typ t) fdecl.sparameters)
-      in let ftype = L.function_type (ltype_of_typ fdecl.sfunction_type) formal_types in
+      in let ftype = L.function_type (ltype_of_typ fdecl.sfunction_typ) formal_types in
       StringMap.add name (L.define_function name ftype the_module, fdecl) m in
     List.fold_left function_decl StringMap.empty functions in
 
@@ -169,85 +169,95 @@ let printf_t : L.lltype =
           then A.Float(1.0)
           else A.Int(1) in
 
-          expr builder (A.Assign(val, A.Binop(e, op_typ, num_typ)))
+          expr builder (A.Assign(val, A.Binop(e, op_typ, num_typ))) 
+
+      | SAssign (v, e) -> 
+        let e' = expr builder e and val = lookup v in
+         ignore (L.build_store e' val builder); e'
+
+	   | SCall ("printi", [e]) 
+
+	   | SCall ("printb", [e]) ->
+	  L.build_call printf_func [| int_format_str ; (expr builder e) |]
+	    "printf" builder
+
+      | SCall ("prints", [e]) ->
+	  L.build_call printf_func [| str_format_str ; (expr builder e) |] "printf" builder
+
+      | SCall ("printf", [e]) -> 
+	  L.build_call printf_func [| float_format_str ; (expr builder e) |]
+	    "printf" builder
 
 
-      | A.Assign (t, s, e) ->
-          let _ = (local_vars := StringMap.add s (t, (L.build_alloca (ltype_of_typ t)) s llbuilder) !local_vars) in
-          let e' = expr_generator llbuilder e and llval = lookup s in
-          ignore (L.build_store e' llval llbuilder); e'
+      | SCall (f, args) ->
+         let (fdef, fdecl) = StringMap.find f function_decls in
+	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
+	 let result = (match fdecl.sfunction_typ with 
+                        A.Void -> ""
+                      | _ -> f ^ "_result") in
+         L.build_call fdef (Array.of_list llargs) result builder
+    in
 
 
+    let add_terminal builder instr =
+      match L.block_terminator (L.insertion_block builder) with
+	Some _ -> ()
+      | None -> ignore (instr builder) in
 
+    let rec stmt builder = function
+	SBlock sl -> List.fold_left stmt builder sl
+      | SExpr e -> ignore(expr builder e); builder 
+      | SReturn e -> ignore(match fdecl.styp with
+                              (* Special "return nothing" instr *)
+                              A.Void -> L.build_ret_void builder 
+                              (* Build return statement *)
+                            | _ -> L.build_ret (expr builder e) builder );
+                     builder
+      | SIf (predicate, then_stmt, else_stmt) ->
+         let bool_val = expr builder predicate in
+	 let merge_bb = L.append_block context "merge" the_function in
+         let build_br_merge = L.build_br merge_bb in 
 
+	 let then_bb = L.append_block context "then" the_function in
+	 add_terminal (stmt (L.builder_at_end context then_bb) then_stmt)
+	   build_br_merge;
 
+	 let else_bb = L.append_block context "else" the_function in
+	 add_terminal (stmt (L.builder_at_end context else_bb) else_stmt)
+	   build_br_merge;
 
+	 ignore(L.build_cond_br bool_val then_bb else_bb builder);
+	 L.builder_at_end context merge_bb
 
-let build_function_body fdecl = (* Something *)
- in 
+      | SWhile (predicate, body) ->
+	  let pred_bb = L.append_block context "while" the_function in
+	  ignore(L.build_br pred_bb builder);
 
+	  let body_bb = L.append_block context "while_body" the_function in
+	  add_terminal (stmt (L.builder_at_end context body_bb) body)
+	    (L.build_br pred_bb);
 
-(*Something*)
+	  let pred_builder = L.builder_at_end context pred_bb in
+	  let bool_val = expr pred_builder predicate in
+
+	  let merge_bb = L.append_block context "merge" the_function in
+	  ignore(L.build_cond_br bool_val body_bb merge_bb pred_builder);
+	  L.builder_at_end context merge_bb
+
+      | SFor (e1, e2, e3, body) -> stmt builder
+	    ( SBlock [SExpr e1 ; SWhile (e2, SBlock [body ; SExpr e3]) ] )
+    in
+
+    (* Build the code for each statement in the function *)
+    let builder = stmt builder (SBlock fdecl.sbody) in
+  
+  	(* Add a return if the last block falls off the end *)
+    add_terminal builder (match fdecl.sfunction_typ with
+        A.Void -> L.build_ret_void
+      | A.Float -> L.build_ret (L.const_float float_t 0.0)
+      | t -> L.build_ret (L.const_int (ltype_of_typ t) 0))
+  in
 
 List.iter build_function_body functions;
   the_module
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(* Create a map of global variables after creating each 
-  let global_vars : L.llvalue StringMap.t =
-    let global_var m (t, n) = 
-      let init = match t with
-          A.Float -> L.const_float (ltype_of_typ t) 0.0
-        | _ -> L.const_int (ltype_of_typ t) 0
-      in StringMap.add n (L.define_global n init the_module) m in
-    List.fold_left global_var StringMap.empty globals *) 
-
-
-(* (* LLVM Types *)
-    and i1_t   = L.i1_type context
-    and i32_t  = L.i32_type context
-    and i8_t   = L.i8_type context
-    and b_t    = L.i8_type context
-    and str_t  = L.pointer_type (L.i8_type context)
-    and flt_t  = L.double_type context
-    and void_t = L.void_type context in 
-
-in
-
-let printf_t : L.lltype = 
-      L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
-let printf_func : L.llvalue = 
-      L.declare_function "printf" printf_t the_module in
-
-let printbig_t : L.lltype =
-      L.function_type i32_t [| i32_t |] in
-let printbig_func : L.llvalue =
-      L.declare_function "printbig" printbig_t the_module in
-
-(* Declare printf(), which the print built-in function will call *)
-let printf_t = L.var_arg_function_type i32_t [| str_t |] in
-let printf_func = L.declare_function "printf" printf_t the_module in
-*)
-
-
-
-
-
-
-
-
-
 
