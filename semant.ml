@@ -187,22 +187,19 @@ let built_in_functions =
 
     (* Return a semantically-checked statement i.e. containing sexprs *)
     let rec check_stmt = function
-
         Expr e -> SExpr (expr e)
-
-      | If(p, b1, b2) -> 
-        SIf(check_bool_expr p, check_stmt b1, check_stmt b2)
-
+      | If(p, b1, b2) -> SIf(check_bool_expr p, check_stmt b1, check_stmt b2)
       | For(e1, e2, e3, st) ->
-        SFor( ignore(expr e1), check_bool_expr e2, ignore(expr e3), check_stmt st)
-
+    SFor(expr e1, check_bool_expr e2, expr e3, check_stmt st)
       | While(p, s) -> SWhile(check_bool_expr p, check_stmt s)
-
       | Return e -> let (t, e') = expr e in
         if t = func.function_typ then SReturn (t, e') 
-          else raise ( Failure ("Incorrect return type. Return gives " ^ string_of_typ t ^ " expected " ^
-          string_of_typ func.function_typ ^ " in " ^ string_of_expr e))
-
+        else raise (
+    Failure ("return gives " ^ string_of_typ t ^ " expected " ^
+       string_of_typ func.function_typ ^ " in " ^ string_of_expr e))
+      
+      (* A block is correct if each statement is correct and nothing
+         follows any Return statement.  Nested blocks are flattened. *)
       | Block sl -> 
           let rec check_stmt_list = function
               [Return _ as s] -> [check_stmt s]
@@ -210,8 +207,15 @@ let built_in_functions =
             | Block sl :: ss  -> check_stmt_list (sl @ ss) (* Flatten blocks *)
             | s :: ss         -> check_stmt s :: check_stmt_list ss
             | []              -> []
-          in check_stmt_list sl
+          in SBlock(check_stmt_list sl)
 
-        in stmt (Block func.code_block)
-
-  in List.iter check_function functions
+    in (* body of check_function *)
+    { sfunction_typ = func.function_typ;
+      sfunction_name = func.function_name;
+      sparameters = func.parameters;
+      slocal_variables  = func.local_variables;
+      scode_block = match check_stmt (Block func.code_block) with
+  SBlock(sl) -> sl
+      | _ -> raise (Failure ("internal error: block didn't become a block?"))
+    }
+  in (globals, List.map check_function functions)
