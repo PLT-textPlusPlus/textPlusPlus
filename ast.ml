@@ -12,17 +12,17 @@ type bind = typ * string
 
 type expr =
 Number of int (*insertedt space for debugging purposes*)
-  | Float of float
-  | String of string
-  | Boolean of bool
-  | Id of string
-  | Binop of expr * op * expr
-  | Unop of uop * expr
-  | Postop of expr * pop
-  | Assign of expr * expr 
-  (*| AssignDecl of typ * string * expr do we need this?*)
-  | Call of string * expr list
-  | Noexpr 
+| Float of float
+| String of string
+| Boolean of bool
+| Id of string
+| Binop of expr * op * expr
+| Unop of uop * expr
+| Postop of expr * pop
+| Assign of expr * expr 
+(*| AssignDecl of typ * string * expr do we need this?*)
+| Call of string * expr list
+| Noexpr 
 
   type stmt =
     Block of stmt list
