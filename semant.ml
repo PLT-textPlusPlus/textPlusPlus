@@ -161,7 +161,7 @@ let built_in_functions =
           Incr when t = Int -> Int
         | Decr when t = Int -> Int
         | _ -> raise (Failure("illegal postunary operator " ^
-              string_of_pop op ^ " on " ^ string_of_expr p)))
+              string_of_pop op ^ " on " ^ string_of_expr p))
 
       | Call(function_name, parameters) as call -> 
           let fd = find_func function_name in
