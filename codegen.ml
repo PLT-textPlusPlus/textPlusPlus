@@ -155,21 +155,21 @@ let printf_t : L.lltype =
 	  (match op with
       	| A.Not   -> L.build_not) e' "tmp" builder
 	  
-      | A.Postop (e, op) ->
-          let e' = expr_generator llbuilder e in
-          let llval = (match e with
-            A.Id(s) -> s
-          | _ -> raise (Failure("This input type cannot be incremented/decremented"))
+      | SPostop (e, op) ->
+          let e' = expr builder e in
+          let val = (match e with
+            SId(s) -> s
+          | _ -> raise (Failure("Value cannot be incremented or decremented"))
           )
           and op_typ = (match op with
             A.Incr -> A.Add
           | A.Decr -> A.Sub
           )
-          and num_typ = if ((L.type_of e' = f_t))
-          then A.NumLit(1.0)
-          else A.IntLit(1) in
+          and num_typ = if ((ltype_of_typ e' = float_t))
+          then A.Float(1.0)
+          else A.Int(1) in
 
-          expr_generator llbuilder (A.Reassign(llval, A.Binop(e, op_typ, num_typ)))
+          expr builder (A.Assign(val, A.Binop(e, op_typ, num_typ)))
 
 
 
