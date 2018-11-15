@@ -8,7 +8,7 @@ type pop = Decr | Incr
 
 type typ = Int | Bool | Float | String | Void
 
-type bind = typ * string * expr
+type bind = typ * string
 
 type expr =
 Number of int (*insertedt space for debugging purposes*)
@@ -104,8 +104,8 @@ let string_of_typ = function
   | Bool -> "bool"
   | Void -> "void"
 
-let string_of_vdecl (t, id, e) = 
-  "@ dec" ^ string_of_typ t ^ " " ^ id ^ "[ " ^ string_of_expr e ^ " ]"
+let string_of_vdecl (t, id) = 
+  "@ dec" ^ string_of_typ t ^ " " ^ id ^ "[ ];\n"
 
 
 let string_of_fdecl fdecl =
