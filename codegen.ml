@@ -172,6 +172,14 @@ let printf_t : L.lltype =
           expr builder (A.Assign(val, A.Binop(e, op_typ, num_typ)))
 
 
+      | A.Assign (t, s, e) ->
+          let _ = (local_vars := StringMap.add s (t, (L.build_alloca (ltype_of_typ t)) s llbuilder) !local_vars) in
+          let e' = expr_generator llbuilder e and llval = lookup s in
+          ignore (L.build_store e' llval llbuilder); e'
+
+
+
+
 
 
 
