@@ -20,7 +20,6 @@ Number of int (*insertedt space for debugging purposes*)
 | Unop of uop * expr
 | Postop of expr * pop
 | Assign of string * expr 
-| Assign of expr * expr
 (*| AssignDecl of typ * string * expr do we need this?*)
 | Call of string * expr list
 | Noexpr 
