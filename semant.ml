@@ -214,4 +214,4 @@ let built_in_functions =
 
         in stmt (Block func.code_block)
 
-  in List.map check_function functions
+  in List.iter check_function functions
