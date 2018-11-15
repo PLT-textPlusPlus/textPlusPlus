@@ -211,7 +211,4 @@ let built_in_functions =
             | s :: ss         -> check_stmt s :: check_stmt_list ss
             | []              -> []
           in SBlock(check_stmt_list sl)
-
-
-
   in (globals, List.map check_function functions)
