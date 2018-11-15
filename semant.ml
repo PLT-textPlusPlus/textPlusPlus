@@ -17,7 +17,7 @@ raise (Failure ("Duplicate variable " ^ n1))
 in 
 
 (* Calls the duplicates (dups) function on globals *)
-dups (List.sort (fun (_,a) (_,b) -> compare a b) globals);;
+dups (List.sort (fun (_,a) (_,b) -> compare a b) globals);
 
 (* Adds built in functions to StringMap *)
 
