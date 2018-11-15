@@ -1,7 +1,7 @@
 (* Semantic Checker for text++ Programming Language *)
 
 open Ast
-(* open Sast*)
+open Sast
 
 module StringMap = Map.Make(String)
 
@@ -212,6 +212,6 @@ let built_in_functions =
             | []              -> []
           in check_stmt_list sl
 
-          
+
 
   in (globals, List.map check_function functions)
