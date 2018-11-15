@@ -212,7 +212,7 @@ let built_in_functions =
             | []              -> []
           in SBlock(check_stmt_list sl)
           in (* body of check_function *)
-    { sfunctionm_typ = func.function_typ;
+    { sfunction_typ = func.function_typ;
       sfunction_name = func.function_name;
       sparameters = func.parameters;
       slocal_variables  = func.local_variables;
@@ -220,4 +220,4 @@ let built_in_functions =
   SBlock(sl) -> sl
       | _ -> raise (Failure ("internal error: block didn't become a block?"))
     }
-  in (globals, List.map check_function functions)
+  in (globals, List.map check_function functions);;
