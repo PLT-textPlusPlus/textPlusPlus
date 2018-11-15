@@ -109,7 +109,7 @@ let string_of_vdecl (t, id, e) =
 
 
 let string_of_fdecl fdecl =
-  "@ def" string_of_typ fdecl.function_typ ^ " " ^
+  "@ def" ^ string_of_typ fdecl.function_typ ^ " " ^
   fdecl.function_name ^ "(" ^ String.concat ", " (List.map snd fdecl.parameters) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_vdecl fdecl.local_variables) ^
