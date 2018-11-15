@@ -43,7 +43,7 @@ let rec string_of_sexpr (t, e) = (*Ask John about t, e *)
  "(" ^ string_of_typ t ^ " : " ^ (match e with
     SNumber(n) -> string_of_int n
   | SFloat(f) -> string_of_float f
-  | String(s) -> string_of_int s
+  | String(s) -> s
   | SBoolean(true) -> "true"
   | SBoolean(false) -> "false"
   | SId(i) -> i
