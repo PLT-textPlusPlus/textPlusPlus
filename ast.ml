@@ -8,7 +8,6 @@ type pop = Decr | Incr
 
 type typ = Int | Bool | Float | String | Void
 
-(* Come back to line below *)
 type bind = typ * string
 
 type expr =
