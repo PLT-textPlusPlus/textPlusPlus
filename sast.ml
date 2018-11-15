@@ -13,7 +13,7 @@ and xpr =
 | SBinop of sexpr * op * sexpr
 | SUnop of uop * sexpr
 | SPostop of sexpr * pop
-| SAssign of sstring * sexpr 
+| SAssign of string * sexpr 
 (*| AssignDecl of typ * string * expr do we need this?*)
 | SCall of string * sexpr list
 | SNoexpr 
