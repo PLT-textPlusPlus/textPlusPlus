@@ -8,7 +8,7 @@ test : all testall.sh
 # to test linking external code
 
 .PHONY : all
-all : textPlusPLus.native printbig.o
+all : textPlusPlus.native printbig.o
 
 # "make textPlusPlus.native" compiles the compiler
 #
