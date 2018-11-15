@@ -70,15 +70,15 @@ let string_of_pop = function
 let rec string_of_expr = function
     Number(n) -> string_of_int n
   | Float(f) -> string_of_float f
+  | Id(s) -> s
   | String(s) -> s
   | Boolean(true) -> "true"
   | Boolean(false) -> "false"
-  | Id(i) -> i
   | Binop(e1, o, e2) ->
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
   | Postop(e, o) -> string_of_expr e ^ string_of_pop o
-  | Assign(e, v) -> 
+  | Assign(v, e) -> 
       "@ " ^ v ^ "[" ^ string_of_expr e ^ "]"    (* ASK ABOUT THIS SHIT *)
   | Call(f, el) ->
     "@  " ^ f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
