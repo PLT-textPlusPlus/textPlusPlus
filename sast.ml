@@ -74,7 +74,7 @@ let rec string_of_sstmt = function
 
 
 let string_of_sfdecl fdecl =
-  "@ def" string_of_typ fdecl.sfunction_typ ^ " " ^
+  "@ def" ^ string_of_typ fdecl.sfunction_typ ^ " " ^
   fdecl.sfunction_name ^ "(" ^ String.concat ", " (List.map snd fdecl.sparameters) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_vdecl fdecl.slocal_variables) ^
