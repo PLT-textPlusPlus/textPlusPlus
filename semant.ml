@@ -212,6 +212,6 @@ let built_in_functions =
             | []              -> []
           in check_stmt_list sl
 
-
+        in stmt (Block func.code_block)
 
   in List.map check_function functions
