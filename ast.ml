@@ -70,7 +70,7 @@ let string_of_pop = function
 let rec string_of_expr = function
     Number(n) -> string_of_int n
   | Float(f) -> string_of_float f
-  | String(s) -> string_of_int s
+  | String(s) -> s
   | Boolean(true) -> "true"
   | Boolean(false) -> "false"
   | Id(i) -> i
