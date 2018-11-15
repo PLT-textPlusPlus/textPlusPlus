@@ -78,7 +78,7 @@ let rec string_of_expr = function
       string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
   | Unop(o, e) -> string_of_uop o ^ string_of_expr e
   | Postop(e, o) -> string_of_expr e ^ string_of_pop o
-  | Assign(v, e) -> 
+  | Assign(e, v) -> 
       "@ " ^ v ^ "[" ^ string_of_expr e ^ "]"    (* ASK ABOUT THIS SHIT *)
   | Call(f, el) ->
     "@  " ^ f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
