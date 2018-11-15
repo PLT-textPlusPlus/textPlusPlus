@@ -11,7 +11,7 @@ type typ = Int | Bool | Float | String | Void
 type bind = typ * string
 
 type expr =
-    Number of int
+Number of int (*insertedt space for debugging purposes*)
   | Float of float
   | String of string
   | Boolean of bool
