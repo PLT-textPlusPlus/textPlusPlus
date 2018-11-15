@@ -158,7 +158,7 @@ let printbig_func : L.llvalue =
       | SPostop (e, op) ->
           let e' = expr builder e in
           let val = (match e with
-            SId(s) -> s
+            SId(s) -> s (*debugging error with spacing*)
           | _ -> raise (Failure("Value cannot be incremented or decremented"))
           )
           and op_typ = (match op with
