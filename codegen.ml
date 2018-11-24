@@ -19,7 +19,7 @@ let translate (globals, functions) =
 	and bool_t     = L.i1_type     context (* bool type *)
 	and float_t    = L.double_type context (* float type *)
 	and void_t     = L.void_type   context (* void type *)
-    and str_t      = L.pointer_type (L.i8_type context) (* string type*)
+  and str_t      = L.pointer_type (L.i8_type context) (* string type*)
 in 
 
 let rec ltype_of_typ = function (* LLVM type for AST type *)
@@ -37,22 +37,18 @@ let global_vars : L.llvalue StringMap.t =
 	let global_var m (t, n) = 
   		let init = match t with
       		A.Float -> L.const_float (ltype_of_typ t) 0.0
-      		| A.String -> L.build_global_stringptr (ltype_of_typ t) "string"
+      		| A.String -> L.build_global_stringptr (ltype_of_typ t) "Null"
       		| A.Bool -> const_int (ltype_of_type t)  false 
       		| A.Void -> L.builder_ret_void builder (ltype_of_typ t) ""
       		| A.Int -> L.const_int (ltype_of_typ t) 0
   		in StringMap.add n (L.define_global n init the_module) m in
 		List.fold_left global_var StringMap.empty globals in
 
-let printf_t : L.lltype = 
-      L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
-let printf_func : L.llvalue = 
-  L.declare_function "printf" printf_t the_module in
 
-let printbig_t : L.lltype =
-  L.function_type i32_t [| i32_t |] in
-let printbig_func : L.llvalue =
-  L.declare_function "printbig" printbig_t the_module in
+let hello_t : L.lltype =
+    L.function_type i32_t [| i32_t |] in
+let hello_func : L.llvalue =
+    L.declare_function "hello" hello_t the_module in
 
 (* Define each function (arguments and return type) so we can 
      call it even before we've created its body *)
@@ -72,7 +68,7 @@ let printbig_func : L.llvalue =
 
     let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder
     and float_format_str = L.build_global_stringptr "%g\n" "fmt" builder 
-	and string_fromat_str = L.build_global_stringptr "%s\n" "fmt" builder 
+	and string_format_str = L.build_global_stringptr "%s\n" "fmt" builder 
 	(*and boolean_fromat_str = L.build_global_stringptr "" "fmt" builder ***Need to fix this*)
 	in
 
@@ -114,6 +110,8 @@ let printbig_func : L.llvalue =
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
+      | SReasign (s, e) -> let e' = expr builder e in
+                          ignore(L.build_store e' (lookup s) builder); e'
 	  | SBinop ((A.Float,_ ) as e1, op, e2) ->
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
@@ -153,46 +151,13 @@ let printbig_func : L.llvalue =
 	  | SUnop(op, ((t, _) as e)) ->
           let e' = expr builder e in
 	  (match op with
-      	| A.Not   -> L.build_not) e' "tmp" builder
-	  
-      | SPostop (e, op) ->
-          let e' = expr builder e in
-          let llval = (match e with
-            SId(s) -> s (*debugging error with spacing*)
-          | _ -> raise (Failure("Value cannot be incremented or decremented"))
-          )
-          and op_typ = (match op with
-            A.Incr -> A.Add
-          | A.Decr -> A.Sub
-          )
-          and num_typ = if ((ltype_of_typ e' = float_t))
-          then A.Float(1.0)
-          else A.Int(1) in
-
-          expr builder (A.Assign(llval, A.Binop(e, op_typ, num_typ)))  
-
-      | SAssign (v, e) -> 
-        let e' = expr builder e and llval = lookup v in
-        ignore (L.build_store e' llval builder); e' (*another spacing error*)
-
-	   | SCall ("printi", [e]) 
-
-	   | SCall ("printb", [e]) ->
-	  L.build_call printf_func [| int_format_str ; (expr builder e) |]
-	    "printf" builder
-
-      | SCall ("prints", [e]) ->
-	  L.build_call printf_func [| str_format_str ; (expr builder e) |] "printf" builder
-
-      | SCall ("printf", [e]) -> 
-	  L.build_call printf_func [| float_format_str ; (expr builder e) |]
-	    "printf" builder
-
-
+      A.Not                  -> L.build_not) e' "tmp" builder
+      | SCall ("hello", [e]) ->
+    L.build_call hello_func [| (expr builder e) |] "hello" builder
       | SCall (f, args) ->
          let (fdef, fdecl) = StringMap.find f function_decls in
-	 let llargs = List.rev (List.map (expr builder) (List.rev args)) in
-	 let result = (match fdecl.sfunction_typ with 
+   let llargs = List.rev (List.map (expr builder) (List.rev args)) in
+   let result = (match fdecl.sfunction_typ with 
                         A.Void -> ""
                       | _ -> f ^ "_result") in
          L.build_call fdef (Array.of_list llargs) result builder
@@ -207,7 +172,7 @@ let printbig_func : L.llvalue =
     let rec stmt builder = function
 	SBlock sl -> List.fold_left stmt builder sl
       | SExpr e -> ignore(expr builder e); builder 
-      | SReturn e -> ignore(match fdecl.styp with
+      | SReturn e -> ignore(match fdecl.sfunction_typ with
                               (* Special "return nothing" instr *)
                               A.Void -> L.build_ret_void builder 
                               (* Build return statement *)
@@ -249,7 +214,7 @@ let printbig_func : L.llvalue =
     in
 
     (* Build the code for each statement in the function *)
-    let builder = stmt builder (SBlock fdecl.sbody) in
+    let builder = stmt builder (SBlock fdecl.scode_block) in
   
   	(* Add a return if the last block falls off the end *)
     add_terminal builder (match fdecl.sfunction_typ with
@@ -259,5 +224,5 @@ let printbig_func : L.llvalue =
   in
 
 List.iter build_function_body functions;
-  the_module
+the_module
 
