@@ -16,15 +16,13 @@ let float = digits* decimal digits+ | digits+ decimal digits*
 
 rule token = parse
     whitespace  { token lexbuf }           (* Whitespace *)
-  | "/*"          { blockComment lexbuf  } (* Comments *)
-  | "//" 		      { lineComment  lexbuf  }
+  | '/*'          { blockComment lexbuf  } (* Comments *)
   | '('           { LPAREN }
   | ')'           { RPAREN }
   | '{'           { LBRACE }
   | '}'           { RBRACE }
   | '['           { LBRACKET }
   | ']'           { RBRACKET }
-  | '@'           { TAG }
   | ';'           { SEMI }
   | ':'	          { COLON }
   | ','           { COMMA }
@@ -33,45 +31,46 @@ rule token = parse
 
   | '+'           { PLUS }
   | '-'           { MINUS }
-  | "++"          { DECREMENT }
-  | "--"          { INCREMENT }
+  | '++'          { DECREMENT }
+  | '--'          { INCREMENT }
   | '*'           { TIMES }
   | '/'           { DIVIDE }
   | '%'	          { MODULO }
   | '='           { ASSIGN }
-  | "=="          { EQ }
-  | "!="          { NEQ }
+  | '=='          { EQ }
+  | '!='          { NEQ }
 
   (* Relational Operators *)
   | '<'           { LT }
-  | "<="          { LEQ }
-  | ">"           { GT }
-  | ">="          { GEQ }
+  | '<='          { LEQ }
+  | '>'           { GT }
+  | '>='          { GEQ }
 
   (* Logical Operators *)
-  | "&&"          { AND }
-  | "||"          { OR }
-  | "!"           { NOT }
+  | '&&'          { AND }
+  | '||'          { OR }
+  | '!'           { NOT }
 
   (* Control Flow *)
-  | "if"          { IF }
-  | "elif"        { ELIF }
-  | "for"         { FOR }
-  | "while"  	    { WHILE }
-  | "continue"    { CONT }
-  | "break"       { BREAK }
-  | "return"      { RETURN }
+  | 'if'          { IF }
+  | 'else'        { ELSE }
+  | 'for'         { FOR }
+  | 'while'  	    { WHILE }
+  | 'continue'    { CONT }
+  | 'break'      { BREAK }
+  | 'return'      { RETURN }
 
   (* Keywords *)
-  | "int"       { INT }
-  | "float"     { FLOAT }
-  | "string"    { STRING }
-  | "bool"      { BOOL }
-  | "null"      { NULL }
-  | "void"      { VOID }
-  | "true"      { TRUE }
-  | "false"     { FALSE }
-  | "def"         { DEFINE }
+  | 'int'       { INT }
+  | 'float'     { FLOAT }
+  | 'string'    { STRING }
+  | 'char'      { CHAR }
+  | 'bool'      { BOOL }
+  | 'null'      { NULL }
+  | 'void'      { VOID }
+  | 'true'      { TRUE }
+  | 'false'     { FALSE }
+  | 'def'         { DEFINE }
 
   (* Literals and Identifiers *)
   | integer as lxm      { NUMBER(int_of_string lxm) }
