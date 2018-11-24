@@ -8,7 +8,7 @@ type pop = Decr | Incr
 
 type typ = Int | Bool | Float | String | Void
 
-type bind = typ * string
+type bind = typ * string * expr
 
 type expr =
 Number of int (*insertedt space for debugging purposes*)
