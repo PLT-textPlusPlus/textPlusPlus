@@ -9,53 +9,36 @@ module StringMap = Map.Make(String)
 let check (globals, functions) = 
 
   (* Function to check for duplicate function names *)
-  let rec dups = function
-  [] -> ()
-|	((_,n1) :: (_,n2) :: _) when n1 = n2 ->
-raise (Failure ("Duplicate variable " ^ n1))
-| _ :: t -> dups t   
-in 
+  let check_binds (kind : string) (binds : bind list) =
+    List.iter (function
+  (Void, b) -> raise (Failure ("illegal void " ^ kind ^ " " ^ b))
+      | _ -> ()) binds;
+    let rec dups = function
+        [] -> ()
+      | ((_,n1) :: (_,n2) :: _) when n1 = n2 ->
+    raise (Failure ("duplicate " ^ kind ^ " " ^ n1))
+      | _ :: t -> dups t
+    in dups (List.sort (fun (_,a) (_,b) -> compare a b) binds)
+  in
 
-(* Calls the duplicates (dups) function on globals *)
-dups (List.sort (fun (_,a) (_,b) -> compare a b) globals);
+  (**** Check global variables ****)
+
+  check_binds "global" globals;
+
 
 (* Adds built in functions to StringMap *)
 
-let built_in_functions =  
+(* Collect function declarations for built-in functions: no bodies *)
+  let built_in_functions = 
+    let add_bind map (name, ty) = StringMap.add name {
+      function_typ = Void;
+      function_name = name; 
+      parameters = [(ty, "x")];
+      local_variables = []; code_block = [] } map
+    in List.fold_left add_bind StringMap.empty [ ("hello", Int);
+  ]
+  in
 
-  StringMap.add "prints"
-  { function_typ = Void;
-    function_name = "prints";
-    parameters = [(String, "x")];
-    local_variables = [];
-    code_block = [] }
-
-  (StringMap.add "printi"
-  { function_typ = Void;
-    function_name = "printi";
-    parameters = [(Int, "x")];
-    local_variables = [];
-    code_block = [] }
-
-  (StringMap.add "printf"
-   { function_typ = Void;
-     function_name = "printf";
-     parameters = [(Float, "x")];
-     local_variables = [];
-     code_block = [] }
-
-  (StringMap.add "printb"
-  { function_typ = Void;
-    function_name = "printb";
-    parameters = [(Boolean, "x")];
-    local_variables = [];
-    code_block = [] }
-
-
-    StringMap.empty
-  ))) 
-
-  in 
 
   (* Add function name to symbol table *)
 
@@ -88,8 +71,13 @@ let built_in_functions =
 
   let check_function func =
     (* Make sure no formals or locals already defined  *)
-    dups "formal" func.parameters;
-    dups "local" func.local_variables;
+    check_binds "formal" func.parameters;
+    check_binds "local" func.local_variables;
+
+
+    let check_assign lvaluet rvaluet err =
+       if lvaluet = rvaluet then lvaluet else raise (Failure err)
+    in   
 
 
     (* Build local symbol table of variables for this function *)
@@ -103,10 +91,11 @@ let built_in_functions =
       with Not_found -> raise (Failure ("Variable is undeclared " ^ s))
 
     in
-
-    let check_assign lvaluet rvaluet err =
-       if lvaluet = rvaluet then lvaluet else raise (Failure err)
-    in   
+  
+  let check_var_decl var_name err =
+      if StringMap.mem var_name (!variables)
+      then raise err
+    in
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
@@ -117,30 +106,32 @@ let built_in_functions =
       | String l -> (String, SString)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
-      | Noexpr -> Void
-      | Assign(id, expression) as ex -> 
-          let lt = type_of_identifier id
-          and (rt, expression') = expr expression in
-          let err = "illegal assignment " ^ string_of_typ lt ^ " = " ^ 
+      | Assign(typ, var, e) as ex ->
+         let lt = type_of_identifier var
+          and (rt, e') = expr e in
+          let err = "illegal assignment " ^ string_of_typ typ ^ " = " ^ 
             string_of_typ rt ^ " in " ^ string_of_expr ex
-          in (check_assign lt rt err, SAssign(id, (rt, expression')))
+          in (check_assign typ rt err, SAssign(typ, var, (rt, e')))
+      | Reassign(var, e) as ex ->
+          let rt = expr e and lt = type_of_identifier var in
+          check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^ 
+                              " = " ^ string_of_typ rt ^ " in " ^ string_of_expr ex))
 
-      | Binop(expression1, op, expression2) as e -> 
-          let (t1, expression1') = expr expression1
-           and (t2, expression2') = expr expression2 in
-          (* Ask Edwards about how to make it such that you can add
-          strings and numbers together// also floats and integers *)
+      | Binop(e1, op, e2) as e -> 
+          let (t1, e1') = expr e1 
+          and (t2, e2') = expr e2 in
+          (* All binary operators require operands of the same type *)
           let same = t1 = t2 in
           (* Determine expression type based on operator and operand types *)
           let ty = match op with
-            Add | Sub | Mult | Div | Mod  when same && t1 = Int   -> Int
-          | Add | Sub | Mult | Div | Mod when same && t1 = Float -> Float
-          | Equal | Neq   when same  -> Bool
+            Add | Sub | Mult | Div | Mod when same && t1 = Int   -> Int
+          | Add | Sub | Mult | Div when same && t1 = Float -> Float
+          | Equal | Neq            when same               -> Bool
           | Less | Leq | Greater | Geq
                      when same && (t1 = Int || t1 = Float) -> Bool
           | And | Or when same && t1 = Bool -> Bool
           | _ -> raise (
-	      Failure ("illegal binary operator " ^
+        Failure ("illegal binary operator " ^
                        string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
                        string_of_typ t2 ^ " in " ^ string_of_expr e))
           in (ty, SBinop((t1, e1'), op, (t2, e2')))
@@ -148,8 +139,7 @@ let built_in_functions =
       | Unop(op, e) as ex -> 
           let (t, e') = expr e in
           let ty = match op with
-            Neg when t = Int || t = Float -> t
-          | Not when t = Bool -> Bool
+           Not when t = Bool -> Bool
           | _ -> raise (Failure ("illegal unary operator " ^ 
                                  string_of_uop op ^ string_of_typ t ^
                                  " in " ^ string_of_expr ex))
@@ -210,8 +200,15 @@ let built_in_functions =
             | Block sl :: ss  -> check_stmt_list (sl @ ss) (* Flatten blocks *)
             | s :: ss         -> check_stmt s :: check_stmt_list ss
             | []              -> []
-          in check_stmt_list sl
+          in SBlock(check_stmt_list sl)
 
-
-
+    in (* body of check_function *)
+    { sfunction_typ = func.function_typ;
+      sfunction_name = func.function_name;
+      sparameters = func.parameters;
+      slocal_variables  = func.local_variables;
+      scode_block = match check_stmt (Block func.code_block) with
+  SBlock(sl) -> sl
+      | _ -> raise (Failure ("internal error: block didn't become a block?"))
+    }
   in (globals, List.map check_function functions)
