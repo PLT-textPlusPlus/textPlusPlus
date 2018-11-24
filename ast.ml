@@ -16,10 +16,12 @@ Number of int (*insertedt space for debugging purposes*)
 | String of string
 | Boolean of bool
 | Id of string
+| Null
 | Binop of expr * op * expr
 | Unop of uop * expr
 | Postop of expr * pop
-| Assign of string * expr 
+| Assign of typ * string * expr 
+| Reassign of string * expr
 (*| AssignDecl of typ * string * expr do we need this?*)
 | Call of string * expr list
 | Noexpr 
