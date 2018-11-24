@@ -72,7 +72,6 @@ rule token = parse
   | "true"      { TRUE }
   | "false"     { FALSE }
   | "def"         { DEFINE }
-  | "dec"         { DECLARE }
 
   (* Literals and Identifiers *)
   | integer as lxm      { NUMBER(int_of_string lxm) }
