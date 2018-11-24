@@ -46,12 +46,12 @@ declarations:
  | declarations func_declaration { fst $1, ($2 :: snd $1) }
 
  func_declaration:
-   TAG DEFINE typ ID LPAREN optional_formal_parameters RPAREN LBRACE var_declaration_list stmt_list RBRACE
-     { {  function_typ = $3;
-              function_name = $4;
-	      parameters= $6;
-	      local_variables = List.rev $9;
-	      code_block = List.rev $10; 
+   DEFINE typ ID LPAREN optional_formal_parameters RPAREN LBRACE var_declaration_list stmt_list RBRACE
+     { {  function_typ = $2;
+              function_name = $3;
+	      parameters= $5;
+	      local_variables = List.rev $8;
+	      code_block = List.rev $9; 
      } }
 
 typ:
@@ -60,7 +60,7 @@ typ:
   | FLOAT   { Float }
   | STRING  { String } 
   | VOID     { Void }
-
+  
 optional_formal_parameters:
     /* nothing */ { [] }
   | formal_parameters_list   { List.rev $1 }
@@ -74,21 +74,20 @@ var_declaration_list:
   | var_declaration_list var_declaration { $2 :: $1 }
 
 var_declaration:
-   TAG DECLARE typ ID LBRACKET expr RBRACKET { ($3, $4, $6) }
+    typ ID ASSIGN expr SEMI   { ($1, $2, $4) }
 
 stmt_list:
    stmt_list stmt { $2 :: $1 }
 
 stmt:
     expr SEMI { Expr $1 }
-  | RETURN SEMI { Return Noexpr }
   | RETURN expr SEMI { Return $2 }
   | LPAREN stmt_list RPAREN { Block(List.rev $2) }
   | LBRACE stmt_list RBRACE { Block(List.rev $2) }
-  | TAG IF LPAREN expr RPAREN stmt TAG ELSE stmt    { If($4, $6, $9) }
-  | TAG FOR LPAREN optional_expr SEMI expr SEMI optional_expr RPAREN stmt
-     { For($4, $6, $8, $10) }
-  | TAG WHILE LPAREN expr RPAREN stmt { While($4, $6) }
+  | IF LPAREN expr RPAREN stmt ELSE stmt    { If($3, $5, $7) }
+  | FOR LPAREN optional_expr SEMI expr SEMI optional_expr RPAREN stmt
+     { For($3, $5, $7, $9) }
+  | WHILE LPAREN expr RPAREN stmt { While($3, $5) }
 
   optional_expr:
   /* nothing */ { Noexpr }
@@ -101,7 +100,7 @@ stmt:
   |	STRING   					             { String($1)}
   |	TRUE						             { Boolean(true)}
   |	FALSE						      		 { Boolean(false)}
-  |	TAG  ID							         { Id($2) }
+  |	ID							         { Id($1) }
   | expr PLUS   expr 						 { Binop($1, Add,   $3) }
   |	expr MINUS  expr 						 { Binop($1, Sub,   $3) }
   |	expr TIMES  expr 						 { Binop($1, Mult,  $3) }
@@ -119,8 +118,9 @@ stmt:
   | expr DECREMENT                           { Postop($1, Decrement) }
   | expr INCREMENT                           { Postop($1, Increment) }
   | LPAREN expr RPAREN                       { $2 }
-  | TAG ID LBRACKET expr RBRACKET      { Assign($2, $4) }
-  | TAG ID LPAREN option_args RPAREN         { Call($2, $4) }
+  | typ ID ASSIGN expr      { Assign($1, $2, $4) } 
+  | ID ASSIGN expr                           { Reassign($1, $3) }
+  | ID LPAREN option_args RPAREN         { Call($1, $3) }
 
 option_args:
     /* nothing */           { [] }
