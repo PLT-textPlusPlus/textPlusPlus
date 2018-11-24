@@ -90,6 +90,3 @@ and blockComment = parse
     "*/" { token lexbuf }
   | _    { blockComment lexbuf }
 
-and lineComment = parse
-    ['\n']  { token lexbuf }
-  | _       { lineComment lexbuf }
