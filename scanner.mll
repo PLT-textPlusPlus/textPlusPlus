@@ -64,7 +64,6 @@ rule token = parse
   | 'int'       { INT }
   | 'float'     { FLOAT }
   | 'string'    { STRING }
-  | 'char'      { CHAR }
   | 'bool'      { BOOL }
   | 'null'      { NULL }
   | 'void'      { VOID }
