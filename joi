@@ -44,3 +44,10 @@ let check_assign lvaluet rvaluet err =
       if StringMap.mem var_name (!variables)
       then raise err
     in
+    
+    
+          | Reassign(var, e) as ex ->
+          let rt = expr e and lt = type_of_identifier var in
+          check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^ 
+                              " = " ^ string_of_typ rt ^ " in " ^ string_of_expr ex))
+
