@@ -1,0 +1,18 @@
+      | Assign(typ, var, e) as ex ->
+          let lt = (match typ with
+            Arraytype(t, _) -> t
+          | _ -> typ
+          ) in
+          let rt = expr e
+          and invalid_arr = invalid_arr_size typ e in
+          if invalid_arr then raise (Failure ("Invalid length declaration"))
+          else
+          if rt == Void then raise (Failure("Must initialize variable with a value."))
+        else
+          ignore (check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ typ ^ " = " ^ string_of_typ rt ^ " in " ^ string_of_expr ex)));
+          check_var_decl var (Failure ("duplicate declaration of variable " ^ var));
+          let _ =
+            (match func.fname with
+              | _ -> variables := StringMap.add var typ (!variables)
+            )
+          in rt
