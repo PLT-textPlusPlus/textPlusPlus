@@ -69,6 +69,14 @@ let string_of_pop = function
   Decr -> "--"
 | Incr -> "++"
 
+let string_of_typ = function
+    Int -> "int"
+  | Float -> "float"
+  | String -> "string"
+  | Bool -> "bool"
+  | Void -> "void"
+
+
 let rec string_of_expr = function
     Number(n) -> string_of_int n
   | Float(f) -> string_of_float f
@@ -99,12 +107,6 @@ let rec string_of_stmt = function
       string_of_expr e3  ^ ") " ^ string_of_stmt s
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
 
-let string_of_typ = function
-    Int -> "int"
-  | Float -> "float"
-  | String -> "string"
-  | Bool -> "bool"
-  | Void -> "void"
 
 let string_of_vdecl (t, id, e) = 
   string_of_typ t ^ " " ^ id ^ " = " ^ string_of_expr e ";\n"
