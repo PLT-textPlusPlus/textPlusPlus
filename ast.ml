@@ -8,6 +8,8 @@ type pop = Decr | Incr
 
 type typ = Int | Bool | Float | String | Void
 
+type bind = typ * string
+
 type expr =
 Number of int (*insertedt space for debugging purposes*)
 | Float of float
@@ -22,8 +24,6 @@ Number of int (*insertedt space for debugging purposes*)
 | Reassign of string * expr
 | Call of string * expr list
 | Noexpr 
-
-type bind = typ * string * expr
 
   type stmt =
     Block of stmt list
