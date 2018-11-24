@@ -109,7 +109,7 @@ let rec string_of_stmt = function
 
 
 let string_of_vdecl (t, id, e) = 
-  string_of_typ t ^ " " ^ id ^ " = " ^ string_of_expr e ";\n"
+  string_of_typ t ^ " " ^ id ^ " = " ^ string_of_expr e ^ ";\n"
   
   
 let string_of_fdecl fdecl =
