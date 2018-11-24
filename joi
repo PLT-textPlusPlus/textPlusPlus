@@ -16,3 +16,17 @@
               | _ -> variables := StringMap.add var typ (!variables)
             )
           in rt
+          
+          
+          
+          
+let check_assign lvaluet rvaluet err =
+    if lvaluet = rvaluet then rvaluet
+    else if lvaluet = Num && rvaluet = AnyType then lvaluet
+    else if lvaluet = Int && rvaluet = AnyType then lvaluet
+    else if lvaluet = String && rvaluet = AnyType then lvaluet
+    else if lvaluet = Bool && rvaluet = AnyType then lvaluet
+    else if lvaluet = Num && rvaluet = NumberType then lvaluet
+    else if lvaluet = Int && rvaluet = NumberType then lvaluet
+    else raise err
+  in
