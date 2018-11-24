@@ -1,4 +1,4 @@
-@ def string main()
+def string main()
 {
-	prints("hello world");
+	hello(0);
 }
