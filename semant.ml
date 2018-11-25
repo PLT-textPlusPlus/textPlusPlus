@@ -210,5 +210,5 @@ let check (globals, functions) =
       scode_block = match check_stmt (Block func.code_block) with
   SBlock(sl) -> sl
       | _ -> raise (Failure ("internal error: block didn't become a block?"))
-    }
+    };
   in (globals, List.map check_function functions)
