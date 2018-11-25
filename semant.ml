@@ -7,7 +7,7 @@ module StringMap = Map.Make(String)
 
 (* Checks the globals and function in program *)
 let check (globals, functions) = 
-
+(*
   (* Function to check for duplicate function names *)
   let check_binds (kind : string) (binds : bind list) =
     List.iter (function
@@ -210,5 +210,7 @@ let check (globals, functions) =
       scode_block = match check_stmt (Block func.code_block) with
   SBlock(sl) -> sl
       | _ -> raise (Failure ("internal error: block didn't become a block?"))
-    };
+    }*)
+
+    let check_function x = x
   in (globals, List.map check_function functions)
