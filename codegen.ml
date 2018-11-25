@@ -108,8 +108,8 @@ let hello_func : L.llvalue =
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (v, s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
-      | SReasign (s, e) -> let e' = expr builder e in
-                          ignore(L.build_store e' (lookup s) builder); e'
+(*      | SReasign (s, e) -> let e' = expr builder e in
+                          ignore(L.build_store e' (lookup s) builder); e' *)
 	  | SBinop ((A.Float,_ ) as e1, op, e2) ->
 	  let e1' = expr builder e1
 	  and e2' = expr builder e2 in
