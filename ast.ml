@@ -108,13 +108,13 @@ let rec string_of_stmt = function
   | While(e, s) -> "while (" ^ string_of_expr e ^ ") " ^ string_of_stmt s
 
 
-let string_of_vdecl (t, id, e) = 
-  string_of_typ t ^ " " ^ id ^ " = " ^ string_of_expr e ^ ";\n"
+let string_of_vdecl (t, id) = 
+  string_of_typ t ^ " " ^ id ^ ";\n"
   
   
 let string_of_fdecl fdecl =
   "def" ^ string_of_typ fdecl.function_typ ^ " " ^
-  fdecl.function_name ^ "(" ^ String.concat ", " (List.map string_of_vdecl fdecl.parameters) ^
+  fdecl.function_name ^ "(" ^ String.concat ", " (List.map snd fdecl.parameters) ^
   ")\n{\n" ^
   String.concat "" (List.map string_of_vdecl fdecl.local_variables) ^
   String.concat "" (List.map string_of_stmt fdecl.code_block) ^
