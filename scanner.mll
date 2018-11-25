@@ -31,31 +31,31 @@ rule token = parse
 
   | '+'           { PLUS }
   | '-'           { MINUS }
-  | '++'          { DECREMENT }
-  | '--'          { INCREMENT }
+  | "++"          { DECREMENT }
+  | "--"          { INCREMENT }
   | '*'           { TIMES }
   | '/'           { DIVIDE }
   | '%'	          { MODULO }
   | '='           { ASSIGN }
-  | '=='          { EQ }
-  | '!='          { NEQ }
+  | "=="          { EQ }
+  | "!="          { NEQ }
 
   (* Relational Operators *)
   | '<'           { LT }
-  | '<='          { LEQ }
+  | "<="          { LEQ }
   | '>'           { GT }
-  | '>='          { GEQ }
+  | ">="          { GEQ }
 
   (* Logical Operators *)
-  | '&&'          { AND }
-  | '||'          { OR }
-  | '!'           { NOT }
+  | "&&"          { AND }
+  | "||"          { OR }
+  | "!"           { NOT }
 
   (* Control Flow *)
-  | 'if'          { IF }
-  | 'else'        { ELSE }
-  | 'for'         { FOR }
-  | 'while'  	    { WHILE }
+  | "if"          { IF }
+  | "else"        { ELSE }
+  | "for"         { FOR }
+  | "while"  	    { WHILE }
   | 'continue'    { CONT }
   | 'break'      { BREAK }
   | 'return'      { RETURN }
