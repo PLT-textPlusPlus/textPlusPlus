@@ -8,7 +8,7 @@ test : all testall.sh
 # to test linking external code
 
 .PHONY : all
-all : textPlusPlus.native hello.o
+all : textPlusPlus.native printbig.o
 
 # "make textPlusPlus.native" compiles the compiler
 #
@@ -30,8 +30,8 @@ clean :
 
 # Testing the "printbig" example
 
-hello : hello.c
-	cc -o hello -DBUILD_TEST hello.c
+printbig : printbig.c
+	cc -o printbig -DBUILD_TEST printbig.c
 
 # Building the tarball
 
@@ -46,7 +46,7 @@ TESTFILES = $(TESTS:%=test-%.mc) $(TESTS:%=test-%.out) \
 
 TARFILES = ast.ml sast.ml codegen.ml Makefile _tags textPlusPlus.ml parser.mly \
 	README scanner.mll semant.ml testall.sh \
-	hello.c \
+	printbig.c \
 	$(TESTFILES:%=tests/%) 
 
 textPlusPlus.tar.gz : $(TARFILES)
