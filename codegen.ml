@@ -33,13 +33,13 @@ in
 (* Create a map of global variables after creating each *)
 let global_vars : L.llvalue StringMap.t =
 	let global_var m (t, n) = 
-  	(*	let init = match t with
+  		let init = match t with
      		(* A.Float -> L.const_float (ltype_of_typ t) 0.0 *)
       	(*	| A.String -> L.build_global_stringptr (ltype_of_typ t) "Null" *)
       	(* | A.Bool -> const_int (ltype_of_type t)  false *)
       	(*	| A.Void -> L.builder_ret_void builder (ltype_of_typ t) "" *)
       		| A.Int -> L.const_int (ltype_of_typ t) 0 
-  		in StringMap.add n (L.define_global n init the_module) m in *)
+  		in StringMap.add n (L.define_global n init the_module) m in 
 		List.fold_left global_var StringMap.empty globals in
 
 
