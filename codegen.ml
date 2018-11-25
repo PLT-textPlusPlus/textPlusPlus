@@ -21,7 +21,7 @@ let translate (globals, functions) =
   and void_t     = L.void_type   context (* void type *)
   in 
 
-let rec ltype_of_typ = function (* LLVM type for AST type *)
+let (* rec *) ltype_of_typ = function (* LLVM type for AST type *)
     A.Int -> i32_t
   | A.Bool -> bool_t
   | A.Void -> void_t
