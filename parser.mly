@@ -74,7 +74,7 @@ var_declaration_list:
   | var_declaration_list var_declaration { $2 :: $1 }
 
 var_declaration:
-    typ ID ASSIGN expr SEMI   { ($1, $2, $4) }
+    typ ID ASSIGN expr SEMI   { ($1, $2, (*$4*)) }
 
 stmt_list:
    stmt_list stmt { $2 :: $1 }
