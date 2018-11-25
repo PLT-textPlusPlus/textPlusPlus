@@ -95,10 +95,10 @@ let check (globals, functions) =
 
     in
   
-    let check_var_decl var_name err =
+   (*let check_var_decl var_name err =
       if StringMap.mem var_name (!variables)
       then raise err
-    in
+    in *)
 
 
     (* Return a semantically-checked expression, i.e., with a type *)
