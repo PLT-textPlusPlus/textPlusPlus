@@ -29,21 +29,21 @@ rule token = parse
 
   (* Arithmetic Operators *)
 
-  | '+'           { PLUS }
-  | '-'           { MINUS }
+  | "+"           { PLUS }
+  | "-"           { MINUS }
   | "++"          { DECREMENT }
   | "--"          { INCREMENT }
-  | '*'           { TIMES }
-  | '/'           { DIVIDE }
-  | '%'	          { MODULO }
-  | '='           { ASSIGN }
+  | "*"           { TIMES }
+  | "/"           { DIVIDE }
+  | "%"	          { MODULO }
+  | "="           { ASSIGN }
   | "=="          { EQ }
   | "!="          { NEQ }
 
   (* Relational Operators *)
-  | '<'           { LT }
+  | "<"           { LT }
   | "<="          { LEQ }
-  | '>'           { GT }
+  | ">"           { GT }
   | ">="          { GEQ }
 
   (* Logical Operators *)
@@ -56,20 +56,20 @@ rule token = parse
   | "else"        { ELSE }
   | "for"         { FOR }
   | "while"  	    { WHILE }
-  | 'continue'    { CONT }
-  | 'break'      { BREAK }
-  | 'return'      { RETURN }
+  | "continue"    { CONT }
+  | "break"      { BREAK }
+  | "return"      { RETURN }
 
   (* Keywords *)
-  | 'int'       { INT }
-  | 'float'     { FLOAT }
-  | 'string'    { STRING }
-  | 'bool'      { BOOL }
-  | 'null'      { NULL }
-  | 'void'      { VOID }
-  | 'true'      { TRUE }
-  | 'false'     { FALSE }
-  | 'def'         { DEFINE }
+  | "int"       { INT }
+  | "float"     { FLOAT }
+  | "string"    { STRING }
+  | "bool"      { BOOL }
+  | "null"     { NULL }
+  | "void"      { VOID }
+  | "true"      { TRUE }
+  | "false"     { FALSE }
+  | "def"         { DEFINE }
 
   (* Literals and Identifiers *)
   | integer as lxm      { NUMBER(int_of_string lxm) }
