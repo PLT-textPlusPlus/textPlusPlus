@@ -12,8 +12,8 @@ type bind = typ * string
 
 type expr =
 Number of int (*insertedt space for debugging purposes*)
-| Float of float
-| String of string
+| Fliteral of float
+| Sliteral of string
 | Boolean of bool
 | Id of string
 | Null
@@ -79,9 +79,9 @@ let string_of_typ = function
 
 let rec string_of_expr = function
     Number(n) -> string_of_int n
-  | Float(f) -> string_of_float f
+  | Fliteral(f) -> string_of_float f
   | Id(s) -> s
-  | String(s) -> s
+  | Sliteral(s) -> s
   | Boolean(true) -> "true"
   | Boolean(false) -> "false"
   | Null -> "null"

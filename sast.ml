@@ -6,8 +6,8 @@ open Ast
 type sexpr = typ * xpr
 and xpr =
     SNumber of int
-| SFloat of float
-| SString of string
+| SFliteral of float
+| SSliteral of string
 | SBoolean of bool
 | SId of string
 | SNull
@@ -43,8 +43,8 @@ and xpr =
 let rec string_of_sexpr (t, e) = (*Ask John about t, e *)
  "(" ^ string_of_typ t ^ " : " ^ (match e with
     SNumber(n) -> string_of_int n
-  | SFloat(f) -> string_of_float f
-  | SString(s) -> s
+  | SFliteral(f) -> string_of_float f
+  | SSliteral(s) -> s
   | SBoolean(true) -> "true"
   | SBoolean(false) -> "false"
   | SNull -> "null"
