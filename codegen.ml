@@ -106,7 +106,7 @@ let hello_func : L.llvalue =
       | SString l -> L.build_global_stringptr s "string" llbuilder
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
-      | SAssign (s, e) -> let e' = expr builder e in
+      | SAssign (v, s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
       | SReasign (s, e) -> let e' = expr builder e in
                           ignore(L.build_store e' (lookup s) builder); e'
