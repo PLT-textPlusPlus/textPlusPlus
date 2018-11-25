@@ -32,7 +32,7 @@ and xpr =
     sfunction_name : string;
     sparameters : bind list;
     slocal_variables : bind list;
-    scode_block : Ast.stmt list;
+    scode_block : sstmt list;
   }
 
 
