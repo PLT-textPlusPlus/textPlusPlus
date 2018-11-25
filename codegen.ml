@@ -24,7 +24,7 @@ in
 
 let rec ltype_of_typ = function (* LLVM type for AST type *)
     A.Int -> i32_t
-  | A.String -> str_t
+  (*| A.String -> str_t *)
   | A.Bool -> bool_t
   | A.Void -> void_t
   | A.Float -> float_t
