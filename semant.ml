@@ -68,7 +68,7 @@ let check (globals, functions) =
 
   in
 
-  let _ = function_decl "main" in (* Ensure "main" is defined *)
+  let _ = (* function_decls *) find_func "main" in (* Ensure "main" is defined *)
 
   let check_function func =
 
