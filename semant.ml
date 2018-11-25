@@ -117,11 +117,11 @@ let check (globals, functions) =
             string_of_typ rt ^ " in " ^ string_of_expr ex
           in (check_assign typ rt err, SAssign(typ, var, (rt, e')))
 
-      | Reassign(var, e) as ex ->
+     (* | Reassign(var, e) as ex ->
           let rt = expr e and lt = type_of_identifier var in
           check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^ 
                               " = " ^ string_of_typ rt ^ " in " ^ string_of_expr ex))
-
+      *)
       | Binop(e1, op, e2) as e -> 
           let (t1, e1') = expr e1 
           and (t2, e2') = expr e2 in
