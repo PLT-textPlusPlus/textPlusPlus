@@ -101,7 +101,7 @@ let hello_func : L.llvalue =
     (* Construct code for an expression; return its value *)
     let rec expr builder ((_, e) : sexpr) = match e with
 	SNumber i  -> L.const_int i32_t i
-      | SBoolean b  -> L.const_int i1_t (if b then 1 else 0)
+      | SBoolean b  -> L.const_int i1_type (if b then 1 else 0)
       | SFloat l -> L.const_float_of_string float_t l
       | SString l -> L.build_global_stringptr s "string" llbuilder
       | SNoexpr     -> L.const_int i32_t 0
