@@ -16,7 +16,7 @@ let float = digits* decimal digits+ | digits+ decimal digits*
 
 rule token = parse
     whitespace  { token lexbuf }           (* Whitespace *)
-| '/*'          { blockComment lexbuf  } (* Comments *)
+| "/*"          { blockComment lexbuf  } (* Comments *)
   | '('           { LPAREN }
   | ')'           { RPAREN }
   | '{'           { LBRACE }
