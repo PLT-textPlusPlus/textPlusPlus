@@ -13,7 +13,7 @@ open Ast
 
 %token <int> NUMBER
 %token <float> FLIT
-%token <string> STRING
+%token <string> STRINGLIT
 %token <string> ID
 
 %token EOF
@@ -97,7 +97,7 @@ stmt:
 
   |	NUMBER						             { Number($1)}
   |	FLIT  						             { Fliteral($1) }
-  |	STRING   					             { String($1)}
+  |	STRINGLIT   					             { Sliteral($1)}
   |	TRUE						             { Boolean(true)}
   |	FALSE						      		 { Boolean(false)}
   |     NULL								{ Null }

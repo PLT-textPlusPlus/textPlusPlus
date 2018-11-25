@@ -74,7 +74,7 @@ rule token = parse
   (* Literals and Identifiers *)
   | integer as lxm      { NUMBER(int_of_string lxm) }
   | float as lxm        { FLIT(float_of_string lxm)}
-  | '"'([^ '"']* as str)'"' as lxm { STRING(str)}
+  | '"'([^ '"']* as str)'"' as lxm { STRINGLIT(str)}
   | id as lxm           { ID(lxm) }
 
   
