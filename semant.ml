@@ -10,6 +10,7 @@ let check (globals, functions) =
 
   (* Function to check for duplicate function names *)
   let check_binds (kind : string) (binds : bind list) =
+
     List.iter (function
   (Void, b) -> raise (Failure ("illegal void " ^ kind ^ " " ^ b))
       | _ -> ()) binds;
@@ -70,6 +71,7 @@ let check (globals, functions) =
   let _ = function_decl "main" in (* Ensure "main" is defined *)
 
   let check_function func =
+
     (* Make sure no formals or locals already defined  *)
     check_binds "formal" func.parameters;
     check_binds "local" func.local_variables;
@@ -85,6 +87,7 @@ let check (globals, functions) =
 	                StringMap.empty (globals @ func.parameters )
     in
 
+
     (* Return a variable from our local symbol table *)
     let type_of_identifier s =
       try StringMap.find s symbol_table
@@ -92,10 +95,11 @@ let check (globals, functions) =
 
     in
   
-  let check_var_decl var_name err =
+    let check_var_decl var_name err =
       if StringMap.mem var_name (!variables)
       then raise err
     in
+
 
     (* Return a semantically-checked expression, i.e., with a type *)
     let rec expr = function
@@ -112,6 +116,7 @@ let check (globals, functions) =
           let err = "illegal assignment " ^ string_of_typ typ ^ " = " ^ 
             string_of_typ rt ^ " in " ^ string_of_expr ex
           in (check_assign typ rt err, SAssign(typ, var, (rt, e')))
+
       | Reassign(var, e) as ex ->
           let rt = expr e and lt = type_of_identifier var in
           check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^ 
@@ -146,6 +151,7 @@ let check (globals, functions) =
           in (ty, SUnop(op, (t, e')))
 
  (*     | Postop (e, op) as p ->
+>>>>>>> 910c7a475c0d01de2af602bd4366c2a2d4021874
         let (t, e')  = expr e in
           let ty = match op with
           Incr when t = Int -> Int
@@ -166,7 +172,7 @@ let check (globals, functions) =
             in (check_assign ft et err, e')
           in 
           let parameters' = List.map2 check_call fd.parameters parameters
-          in (fd.function_typ, SCall(function_name, parameters'))
+          in (fd.function_typ, SCall(function_name, parameters')) 
     in
 
     let check_bool_expr e = 
@@ -212,5 +218,4 @@ let check (globals, functions) =
       | _ -> raise (Failure ("internal error: block didn't become a block?"))
     }
 
-    let check_function x = x
   in (globals, List.map check_function functions)
