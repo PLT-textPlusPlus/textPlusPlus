@@ -12,7 +12,7 @@ open Ast
 %token IF ELSE FOR WHILE CONT BREAK RETURN
 
 %token <int> NUMBER
-%token <float> FLOAT
+%token <float> FLIT
 %token <string> STRING
 %token <string> ID
 
@@ -96,7 +96,7 @@ stmt:
   expr:
 
   |	NUMBER						             { Number($1)}
-  |	FLOAT  						             { Float($1) }
+  |	FLIT  						             { Fliteral($1) }
   |	STRING   					             { String($1)}
   |	TRUE						             { Boolean(true)}
   |	FALSE						      		 { Boolean(false)}
