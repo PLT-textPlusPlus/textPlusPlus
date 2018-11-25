@@ -18,13 +18,11 @@ let translate (globals, functions) =
 	and print_t    = L.i8_type     context (* print type *)
 	and bool_t     = L.i1_type     context (* bool type *)
 	and float_t    = L.double_type context (* float type *)
-	and void_t     = L.void_type   context (* void type *)
-  and str_t      = L.pointer_type (L.i8_type context) (* string type*)
-in 
+  and void_t     = L.void_type   context (* void type *)
+  in 
 
 let rec ltype_of_typ = function (* LLVM type for AST type *)
     A.Int -> i32_t
-  (*| A.String -> str_t *)
   | A.Bool -> bool_t
   | A.Void -> void_t
   | A.Float -> float_t
@@ -36,11 +34,11 @@ in
 let global_vars : L.llvalue StringMap.t =
 	let global_var m (t, n) = 
   		let init = match t with
-      		A.Float -> L.const_float (ltype_of_typ t) 0.0
-      		| A.String -> L.build_global_stringptr (ltype_of_typ t) "Null"
+     		A.Float -> L.const_float (ltype_of_typ t) 0.0
+(*      		| A.String -> L.build_global_stringptr (ltype_of_typ t) "Null"
       		| A.Bool -> const_int (ltype_of_type t)  false 
       		| A.Void -> L.builder_ret_void builder (ltype_of_typ t) ""
-      		| A.Int -> L.const_int (ltype_of_typ t) 0
+      		| A.Int -> L.const_int (ltype_of_typ t) 0 *)
   		in StringMap.add n (L.define_global n init the_module) m in
 		List.fold_left global_var StringMap.empty globals in
 
