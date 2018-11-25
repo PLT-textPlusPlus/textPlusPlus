@@ -73,8 +73,8 @@ let rec string_of_sstmt = function
       string_of_sexpr e3  ^ ") " ^ string_of_sstmt s
   | SWhile(e, s) -> "while (" ^ string_of_sexpr e ^ ") " ^ string_of_sstmt s
 
-let string_of_svdecl (t, id, e) = 
-    string_of_typ t ^ " " ^ id ^ " = " ^ string_of_sexpr e ^ ";\n"
+let string_of_svdecl (t, id) = 
+    string_of_typ t ^ " " ^ id ^ ";\n"
 
 let string_of_sfdecl fdecl =
   "def " ^ string_of_typ fdecl.sfunction_typ ^ " " ^
