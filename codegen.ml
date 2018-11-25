@@ -34,7 +34,7 @@ in
 let global_vars : L.llvalue StringMap.t =
 	let global_var m (t, n) = 
   		let init = match t with
-     		A.Float -> L.const_float (ltype_of_typ t) 0.0
+     		(* A.Float -> L.const_float (ltype_of_typ t) 0.0 *)
       		| A.String -> L.build_global_stringptr (ltype_of_typ t) "Null"
       		| A.Bool -> const_int (ltype_of_type t)  false 
       		| A.Void -> L.builder_ret_void builder (ltype_of_typ t) ""
