@@ -103,7 +103,7 @@ let hello_func : L.llvalue =
 	SNumber i  -> L.const_int i32_t i
       | SBoolean b  -> L.const_int bool_t (if b then 1 else 0)
       (*| SFloat l -> L.const_float_of_string float_t l *)
-      | SString l -> L.build_global_stringptr s "string" llbuilder
+      (*| SString l -> L.build_global_stringptr s "string" llbuilder *)
       | SNoexpr     -> L.const_int i32_t 0
       | SId s       -> L.build_load (lookup s) s builder
       | SAssign (v, s, e) -> let e' = expr builder e in
