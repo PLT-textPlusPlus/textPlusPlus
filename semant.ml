@@ -105,9 +105,9 @@ let check (globals, functions) =
     let rec expr = function
 
         Number  l -> (Int, SNumber l)
-      | Fliteral l -> (Float, SFloat l)
+      | Fliteral l -> (Fliteral, SFliteral l)
       | Boolean l  -> (Bool, SBoolean l)
-      | Sliteral l -> (String, SString)
+      | Sliteral l -> (Sliteral, SSliteral)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
       | Assign(typ, var, e) as ex ->
