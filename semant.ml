@@ -107,7 +107,7 @@ let check (globals, functions) =
         Number  l -> (Int, SNumber l)
       | Fliteral l -> (Fliteral, SFliteral l)
       | Boolean l  -> (Bool, SBoolean l)
-      | Sliteral l -> (Sliteral, SSliteral)
+      | Sliteral l -> (Sliteral, SSliteral l)
       | Noexpr     -> (Void, SNoexpr)
       | Id s       -> (type_of_identifier s, SId s)
       | Assign(typ, var, e) as ex ->
