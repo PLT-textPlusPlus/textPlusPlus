@@ -116,8 +116,8 @@ stmt:
   | expr AND    expr 			             { Binop($1, And,   $3) }
   | expr OR     expr 			             { Binop($1, Or,    $3) }
   | NOT expr                                 { Unop(Not, $2) }
-  | expr DECREMENT                           { Postop($1, Decrement) }
-  | expr INCREMENT                           { Postop($1, Increment) }
+ (* | expr DECREMENT                           { Postop($1, Decrement) }
+  | expr INCREMENT                           { Postop($1, Increment) } *)
   | LPAREN expr RPAREN                       { $2 }
   | typ ID ASSIGN expr      { Assign($1, $2, $4) } 
   | ID ASSIGN expr                           { Reassign($1, $3) }
